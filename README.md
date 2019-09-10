@@ -1,3 +1,3 @@
 # Sectional
 
-A description of this package.
+Modular UICollectionView data and delegate sources.

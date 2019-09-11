@@ -1,6 +1,6 @@
 //
 //  BaseCollectionSectionDataSource.swift
-//  IQDashboard
+//  Sectional
 //
 //  Created by Chris Conover on 9/17/18.
 //

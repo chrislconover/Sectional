@@ -1,6 +1,6 @@
 //
 //  QueryDataSource.swift
-//  IQDashboard
+//  Sectional
 //
 //  Created by Chris Conover on 12/18/17.
 //  Copyright © 2017 Curious Applications. All rights reserved.

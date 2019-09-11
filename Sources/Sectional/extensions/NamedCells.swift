@@ -1,6 +1,6 @@
 //
 //  NamedCells.swift
-//  IQDashboard
+//  Sectional
 //
 //  Created by Chris Conover on 12/1/17.
 //  Copyright © 2017 Methodist Le Bonheur Healthcare. All rights reserved.

@@ -1,6 +1,6 @@
 //
 //  Differ+Map.swift
-//  IQDashboard
+//  Sectional
 //
 //  Created by Chris Conover on 1/27/18.
 //  Copyright © 2018 Curious Applications. All rights reserved.

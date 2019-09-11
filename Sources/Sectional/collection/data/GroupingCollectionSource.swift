@@ -1,6 +1,6 @@
 //
 //  GroupingCollectionSource.swift
-//  IQDashboard
+//  Sectional
 //
 //  Created by Chris Conover on 10/10/18.
 //

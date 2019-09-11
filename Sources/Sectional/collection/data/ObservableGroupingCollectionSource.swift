@@ -1,6 +1,6 @@
 //
 //  ObservableSectionGroupingSource.swift
-//  IQDashboard
+//  Sectional
 //
 //  Created by Chris Conover on 10/10/18.
 //  Copyright © 2018 Curious Applications. All rights reserved.

@@ -11,9 +11,9 @@ import RxSwift
 
 
 
-class QueryDataSource<T> {
+public class QueryDataSource<T> {
 
-    init(_ source: Observable<[T]>, isEqual: @escaping (T, T) -> Bool) {
+    public init(_ source: Observable<[T]>, isEqual: @escaping (T, T) -> Bool) {
         self.source = source
         self.isEqual = isEqual
         self.publishSubject = PublishSubject<[T]>()
@@ -28,7 +28,7 @@ class QueryDataSource<T> {
         }
     }
 
-    func resetDiff() {
+    public func resetDiff() {
         print("\(#function)")
         lifetimeOfOnChanged = DisposeBag()
         diffedOutput
@@ -36,7 +36,7 @@ class QueryDataSource<T> {
             .disposed(by: lifetimeOfOnChanged)
     }
 
-    func commit() -> Bool {
+    public func commit() -> Bool {
         print("\(#function)")
         guard let _ = onChanged else {
             assert(false, "committing datasource without handler!")

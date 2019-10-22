@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CollectionDiffingSource<T>: CollectionSectionDataSourceBase {
+public class CollectionDiffingSource<T>: CollectionSectionDataSourceBase {
 
     internal init(collectionView: UICollectionView,
                      data: [T],
@@ -74,11 +74,11 @@ class CollectionDiffingSource<T>: CollectionSectionDataSourceBase {
 extension UICollectionView {
 
 
-    func sectionData<T>(diffing data: [T],
-                        isEqual: @escaping (T, T) -> Bool,
-                        build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
-                        configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
-                        withDelegate: ((CollectionDiffingSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
+    public func sectionData<T>(diffing data: [T],
+                               isEqual: @escaping (T, T) -> Bool,
+                               build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
+                               configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
+                               withDelegate: ((CollectionDiffingSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
         -> CollectionDiffingSource<T> {
 
             let dataSource = CollectionDiffingSource<T>(
@@ -95,11 +95,11 @@ extension UICollectionView {
             return dataSource
     }
 
-    func sectionData<T>(diffing data: [T],
-                        build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
-                        isEqual: @escaping (T, T) -> Bool,
-                        configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
-                        withDelegate: ((CollectionDiffingSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
+    public func sectionData<T>(diffing data: [T],
+                               build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
+                               isEqual: @escaping (T, T) -> Bool,
+                               configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
+                               withDelegate: ((CollectionDiffingSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
         -> CollectionDiffingSource<T> {
 
             let dataSource = CollectionDiffingSource<T>(
@@ -116,10 +116,11 @@ extension UICollectionView {
             return dataSource
     }
 
-    func sectionData<T>(diffing data: [T],
-                        build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
-                        configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
-                        withDelegate: ((CollectionDiffingSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
+    public func sectionData<T>(
+        diffing data: [T],
+                               build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
+                               configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
+                               withDelegate: ((CollectionDiffingSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
         -> CollectionDiffingSource<T> where T: Equatable {
 
             let dataSource = CollectionDiffingSource<T>(

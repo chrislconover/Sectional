@@ -8,7 +8,7 @@
 import UIKit
 
 
-class CollectionSectionDataSourceBase: NSObject, CollectionViewSectionDataSource {
+public class CollectionSectionDataSourceBase: NSObject, CollectionViewSectionDataSource {
 
     var indexTitles: ((UICollectionView) -> [String]?)! = nil
     var indexPathForTitleAt: ((UICollectionView, String, Int) -> IndexPath)! = nil
@@ -20,16 +20,16 @@ class CollectionSectionDataSourceBase: NSObject, CollectionViewSectionDataSource
         super.init()
     }
 
-    func indexTitles(for collectionView: UICollectionView) -> [String]? {
+    public func indexTitles(for collectionView: UICollectionView) -> [String]? {
         return self.indexTitles(collectionView)
     }
 
-    func collectionView(_ collectionView: UICollectionView, indexPathForIndexTitle title: String, at index: Int) -> IndexPath {
+    public func collectionView(_ collectionView: UICollectionView, indexPathForIndexTitle title: String, at index: Int) -> IndexPath {
         return indexPathForTitleAt(collectionView, title, index)
     }
 
 
-    override func responds(to aSelector: Selector!) -> Bool {
+    override public func responds(to aSelector: Selector!) -> Bool {
         switch aSelector {
         case Selector.indexTitles:
             return indexTitles != nil
@@ -40,9 +40,9 @@ class CollectionSectionDataSourceBase: NSObject, CollectionViewSectionDataSource
         }
     }
 
-    var rebase: () -> Void = {}
-    var baseOffset: IndexPath = IndexPath(item: 0, section: 0)
-    var totalSections: () -> Int = { 1 }
+    public var rebase: () -> Void = {}
+    public var baseOffset: IndexPath = IndexPath(item: 0, section: 0)
+    public var totalSections: () -> Int = { 1 }
 
     var numberOfSections: (_ in: UICollectionView) -> Int = { _ in
         fatalError("This must be defined")
@@ -84,11 +84,11 @@ class CollectionSectionDataSourceBase: NSObject, CollectionViewSectionDataSource
         return dataSource
     }
 
-    var delegate: CollectionViewNestedDelegateType?
+    public var delegate: CollectionViewNestedDelegateType?
 }
 
 extension CollectionSectionDataSourceBase: CollectionViewNestedConfiguration {
-    var dataSource: CollectionViewSectionDataSource {
+    public var dataSource: CollectionViewSectionDataSource {
         return self
     }
 }

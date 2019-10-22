@@ -9,7 +9,7 @@ import UIKit
 
 
 
-class CollectionStaticSource<T>: CollectionSectionDataSourceBase {
+public class CollectionStaticSource<T>: CollectionSectionDataSourceBase {
 
     fileprivate init(collectionView: UICollectionView,
                      data: [T],
@@ -40,7 +40,7 @@ class CollectionStaticSource<T>: CollectionSectionDataSourceBase {
 
 extension UICollectionView {
 
-    func sectionData<T>(
+    public func sectionData<T>(
         from data: [T],
         refresh: (()->Void)? = nil,
         build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,

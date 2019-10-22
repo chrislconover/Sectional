@@ -10,11 +10,11 @@ import UIKit
 
 // MARK: UICollectionViewDelegate
 
-class CollectionViewCompositeDelegate: NSObject, CollectionOffset, UICollectionViewDelegate {
+public class CollectionViewCompositeDelegate: NSObject, CollectionOffset, UICollectionViewDelegate {
 
-    var baseOffset: IndexPath = IndexPath(item: 0, section: 0)
-    var rebase: () -> Void = {}
-    var totalSections: () -> Int = { 0 }
+    public var baseOffset: IndexPath = IndexPath(item: 0, section: 0)
+    public var rebase: () -> Void = {}
+    public var totalSections: () -> Int = { 0 }
 
     var shouldHighlightItemAt: ((UICollectionView, IndexPathOffset) -> Bool)?
     var didHighlightItemAt: ((UICollectionView, IndexPathOffset) -> Void)?
@@ -75,61 +75,61 @@ class CollectionViewCompositeDelegate: NSObject, CollectionOffset, UICollectionV
     }
 
     // MARK: highlighting
-    func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
+    public func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
         return behavior(indexPath)?.collectionView?(collectionView, shouldHighlightItemAt: indexPath)
             ?? shouldHighlightItemAt?(collectionView, pathOffset(absolute: indexPath)) ?? true
     }
 
-    func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
+    public func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
         behavior(indexPath)?.collectionView?(collectionView, didHighlightItemAt: indexPath)
             ?? didHighlightItemAt?(collectionView, pathOffset(absolute: indexPath))
     }
 
-    func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
+    public func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
         behavior(indexPath)?.collectionView?(collectionView, didUnhighlightItemAt: indexPath)
             ?? didUnhighlightItemAt?(collectionView, pathOffset(absolute: indexPath))
     }
 
 
     // MARK: selection
-    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+    public func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         return behavior(indexPath)?.collectionView?(collectionView, shouldSelectItemAt: indexPath)
             ?? shouldSelectItemAt?(collectionView, pathOffset(absolute: indexPath))
             ?? true
     }
 
-    func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
+    public func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
         return behavior(indexPath)?.collectionView?(collectionView, shouldDeselectItemAt: indexPath)
             ?? shouldDeselectItemAt?(collectionView, pathOffset(absolute: indexPath)) ?? true
     }
 
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         behavior(indexPath)?.collectionView?(collectionView, didSelectItemAt: indexPath)
             ?? didSelectItemAt?(collectionView, pathOffset(absolute: indexPath))
     }
 
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+    public func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         behavior(indexPath)?.collectionView?(collectionView, didDeselectItemAt: indexPath)
             ?? didDeselectItemAt?(collectionView, pathOffset(absolute: indexPath))
     }
 
     // MARK: display
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         behavior(indexPath)?.collectionView?(collectionView, willDisplay: cell, forItemAt: indexPath)
             ?? willDisplay?(collectionView, cell, pathOffset(absolute: indexPath))
     }
 
-    func collectionView(_ collectionView: UICollectionView, willDisplaySupplementaryView view: UICollectionReusableView, forElementKind elementKind: String, at indexPath: IndexPath) {
+    public func collectionView(_ collectionView: UICollectionView, willDisplaySupplementaryView view: UICollectionReusableView, forElementKind elementKind: String, at indexPath: IndexPath) {
         behavior(indexPath)?.collectionView?(collectionView, willDisplaySupplementaryView: view, forElementKind: elementKind, at: indexPath)
             ?? willDisplaySupplementaryView?(collectionView, view, elementKind, pathOffset(absolute: indexPath))
     }
 
-    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         behavior(indexPath)?.collectionView?(collectionView, didEndDisplaying: cell, forItemAt: indexPath)
             ?? didEndDisplaying?(collectionView, cell, pathOffset(absolute: indexPath))
     }
 
-    func collectionView(_ collectionView: UICollectionView, didEndDisplayingSupplementaryView view: UICollectionReusableView, forElementOfKind elementKind: String, at indexPath: IndexPath) {
+    public func collectionView(_ collectionView: UICollectionView, didEndDisplayingSupplementaryView view: UICollectionReusableView, forElementOfKind elementKind: String, at indexPath: IndexPath) {
         behavior(indexPath)?.collectionView?(collectionView, didEndDisplayingSupplementaryView: view,
                                              forElementOfKind: elementKind, at: indexPath)
             ?? didEndDisplayingSupplementaryView?(collectionView, view, elementKind, pathOffset(absolute: indexPath))
@@ -138,13 +138,13 @@ class CollectionViewCompositeDelegate: NSObject, CollectionOffset, UICollectionV
     // MARK: copy / paste
     // These methods provide support for copy/paste actions on cells.
     // All three should be implemented if any are.
-    func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
+    public func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
         return behavior(indexPath)?.collectionView?(collectionView, shouldShowMenuForItemAt: indexPath)
             ?? shouldShowMenuForItemAt?(collectionView, pathOffset(absolute: indexPath))
             ?? false
     }
 
-    func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector,
+    public func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector,
                         forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
         return behavior(indexPath)?.collectionView?(
             collectionView, canPerformAction: action, forItemAt: indexPath, withSender: sender)
@@ -152,7 +152,7 @@ class CollectionViewCompositeDelegate: NSObject, CollectionOffset, UICollectionV
             ?? false
     }
 
-    func collectionView(_ collectionView: UICollectionView, performAction action: Selector,
+    public func collectionView(_ collectionView: UICollectionView, performAction action: Selector,
                         forItemAt indexPath: IndexPath, withSender sender: Any?) {
         behavior(indexPath)?.collectionView?(collectionView, performAction: action,
                                              forItemAt: indexPath, withSender: sender)
@@ -160,7 +160,7 @@ class CollectionViewCompositeDelegate: NSObject, CollectionOffset, UICollectionV
     }
 
     // MARK: support for custom transition layout
-    func collectionView(_ collectionView: UICollectionView,
+    public func collectionView(_ collectionView: UICollectionView,
                         transitionLayoutForOldLayout fromLayout: UICollectionViewLayout,
                         newLayout toLayout: UICollectionViewLayout) -> UICollectionViewTransitionLayout {
         return transitionLayoutForOldLayout?(collectionView, fromLayout, toLayout)
@@ -168,31 +168,31 @@ class CollectionViewCompositeDelegate: NSObject, CollectionOffset, UICollectionV
     }
 
     // MARK: focus
-    func collectionView(_ collectionView: UICollectionView, canFocusItemAt indexPath: IndexPath) -> Bool {
+    public func collectionView(_ collectionView: UICollectionView, canFocusItemAt indexPath: IndexPath) -> Bool {
         return behavior(indexPath)?.collectionView?(collectionView, canFocusItemAt: indexPath)
             ?? canFocusItemAt?(collectionView, pathOffset(absolute: indexPath))
             ?? true
     }
 
-    func collectionView(_ collectionView: UICollectionView, shouldUpdateFocusIn context: UICollectionViewFocusUpdateContext) -> Bool {
+    public func collectionView(_ collectionView: UICollectionView, shouldUpdateFocusIn context: UICollectionViewFocusUpdateContext) -> Bool {
         return shouldUpdateFocusIn?(collectionView, context) ?? true }
 
-    func collectionView(_ collectionView: UICollectionView,
+    public func collectionView(_ collectionView: UICollectionView,
                         didUpdateFocusIn context: UICollectionViewFocusUpdateContext,
                         with coordinator: UIFocusAnimationCoordinator) {
         didUpdateFocusIn?(collectionView, context, coordinator)
     }
 
-    func indexPathForPreferredFocusedView(in collectionView: UICollectionView) -> IndexPath? {
+    public func indexPathForPreferredFocusedView(in collectionView: UICollectionView) -> IndexPath? {
         guard let indexPathForPreferredFocusedView = indexPathForPreferredFocusedView else {
             fatalError("implement if remembersLastFocusedIndex is false") }
         return indexPathForPreferredFocusedView(collectionView)
     }
 
     // MARK: moving cell
-    func collectionView(_ collectionView: UICollectionView,
-                        targetIndexPathForMoveFromItemAt originalIndexPath: IndexPath,
-                        toProposedIndexPath proposedIndexPath: IndexPath) -> IndexPath {
+    public func collectionView(_ collectionView: UICollectionView,
+                               targetIndexPathForMoveFromItemAt originalIndexPath: IndexPath,
+                               toProposedIndexPath proposedIndexPath: IndexPath) -> IndexPath {
 
         let ourCollectionLevelBehavior:() -> IndexPath = { [unowned self] in
             return self.targetIndexPathForMoveFromItemAt?(
@@ -213,12 +213,12 @@ class CollectionViewCompositeDelegate: NSObject, CollectionOffset, UICollectionV
     }
 
     // customize the content offset to be applied during transition or update animations
-    func collectionView(_ collectionView: UICollectionView, targetContentOffsetForProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
+    public func collectionView(_ collectionView: UICollectionView, targetContentOffsetForProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
         return targetContentOffsetForProposedContentOffset?(collectionView, proposedContentOffset) ?? proposedContentOffset
     }
 
     // Spring Loading
-    func collectionView(_ collectionView: UICollectionView,
+    public func collectionView(_ collectionView: UICollectionView,
                         shouldSpringLoadItemAt indexPath: IndexPath,
                         with context: UISpringLoadedInteractionContext) -> Bool {
         return behavior(indexPath)?.collectionView?(
@@ -326,14 +326,14 @@ extension Selector {
 
 
 extension CollectionViewCompositeDelegate {
-    override func responds(to aSelector: Selector!) -> Bool {
+    public override func responds(to aSelector: Selector!) -> Bool {
         return supportedSelectors[aSelector] ?? super.responds(to: aSelector)
     }
 }
 
 
 extension CollectionViewCompositeDelegate: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView,
+    public func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         let error: () -> CGSize = { fatalError("If any section implements \(Selector.sizeForItemAt), it must be handled for all cases") }

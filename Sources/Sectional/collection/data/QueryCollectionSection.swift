@@ -10,9 +10,9 @@ import UIKit
 
 
 
-class CollectionQuerySource<T>: CollectionSectionDataSourceBase {
+public class CollectionQuerySource<T>: CollectionSectionDataSourceBase {
 
-    static func create(for collectionView: UICollectionView,
+    public static func create(for collectionView: UICollectionView,
                        query: QueryDataSource<T>,
                        build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
                        configure: ((CollectionQuerySource, UICollectionView) -> ())? = nil,
@@ -89,7 +89,7 @@ class CollectionQuerySource<T>: CollectionSectionDataSourceBase {
 }
 
 extension UICollectionView {
-    func sectionDataSource<T>(
+    public func sectionDataSource<T>(
         query: QueryDataSource<T>,
         build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
         configure: ((CollectionQuerySource<T>, UICollectionView) -> ())? = nil,

@@ -9,21 +9,21 @@
 import UIKit
 
 
-protocol NamedCell {
+public protocol NamedCell {
     static var name: String { get }
 }
 
 extension UICollectionReusableView: NamedCell {}
-extension NamedCell where Self: UITableViewCell {
+public extension NamedCell where Self: UITableViewCell {
     static var name: String { return String(describing: Self.self) }
 }
 
 extension UITableViewCell: NamedCell {}
 extension NamedCell where Self: UICollectionReusableView {
-    static var name: String { return String(describing: Self.self) }
+    public static var name: String { return String(describing: Self.self) }
 }
 
-extension UICollectionView {
+public extension UICollectionView {
 
     func register<T:UICollectionViewCell>(_ t: T.Type) {
         register(t.self, forCellWithReuseIdentifier: t.name)

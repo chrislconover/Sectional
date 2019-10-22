@@ -13,7 +13,7 @@ import RxSwift
 // TODO: figure out how to unify grouping and non grouping sources, shouldn't need two hierarchies
 
 /// ObservableCollectionSource: simplified collection data source that directly acts upon a RxSwift collection, eliminating the need for the intermediate Query Source.
-class GroupingObservableSource<T, K>: GroupingCollectionSource<T, K>
+public class GroupingObservableSource<T, K>: GroupingCollectionSource<T, K>
     where K: Comparable & Hashable & CustomStringConvertible {
 
     fileprivate init(collectionView: UICollectionView,
@@ -53,7 +53,7 @@ class GroupingObservableSource<T, K>: GroupingCollectionSource<T, K>
 
 extension UICollectionView {
 
-    func sectionData<T, K>(commit source: Observable<[T]>,
+    public func sectionData<T, K>(commit source: Observable<[T]>,
                            isEqual: @escaping (T, T) -> Bool,
                            groupBy: @escaping (T) -> K,
                            prepare: ((UICollectionView)->())? = nil,
@@ -79,7 +79,7 @@ extension UICollectionView {
             return dataSource
     }
 
-    func sectionData<T, K>(defer source: Observable<[T]>,
+    public func sectionData<T, K>(defer source: Observable<[T]>,
                         isEqual: @escaping (T, T) -> Bool,
                         groupBy: @escaping (T) -> K,
                         prepare: ((UICollectionView)->())? = nil,

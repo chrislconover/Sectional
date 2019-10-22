@@ -15,7 +15,7 @@ import UIKit
 
  Only required methods are implemented, since there is no easy way to determine in advance if a child handler will implement an method
  */
-class CompositeCollectionDataSource: NSObject, UICollectionViewDataSource {
+public class CompositeCollectionDataSource: NSObject, UICollectionViewDataSource {
 
     // MARK: Item and section metrics
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -29,12 +29,12 @@ class CompositeCollectionDataSource: NSObject, UICollectionViewDataSource {
     }
 
     // MARK: Item and section metrics
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let (source, _) = sourceAndPath(absolute: indexPath) // path conversion in nested source
         return source.dataSource.collectionView(collectionView, cellForItemAt: indexPath)
     }
 
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+    public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let (source, _) = sourceAndPath(absolute: indexPath) // path conversion in nested source
         return source.dataSource.collectionView!(collectionView, viewForSupplementaryElementOfKind: kind, at: indexPath)
     }
@@ -125,14 +125,14 @@ class CompositeCollectionDataSource: NSObject, UICollectionViewDataSource {
 
 extension UICollectionView {
 
-    func sections(
+    public func sections(
         from models: CollectionViewNestedConfiguration...,
         configure: ((CompositeCollectionDataSource, CollectionViewCompositeDelegate) -> Void)? = nil)
         -> CompositeCollectionDataSource {
             return sections(from: models, configure: configure)
     }
 
-    func sections(
+    public func sections(
         from models: [CollectionViewNestedConfiguration],
         configure: ((CompositeCollectionDataSource, CollectionViewCompositeDelegate) -> Void)? = nil)
         -> CompositeCollectionDataSource {

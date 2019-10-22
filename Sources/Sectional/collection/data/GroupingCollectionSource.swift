@@ -8,7 +8,7 @@
 import UIKit
 
 
-class GroupingCollectionSource<T, K>: CollectionSectionDataSourceBase
+public class GroupingCollectionSource<T, K>: CollectionSectionDataSourceBase
     where K: Comparable & Hashable & CustomStringConvertible {
 
     internal init(collectionView: UICollectionView,

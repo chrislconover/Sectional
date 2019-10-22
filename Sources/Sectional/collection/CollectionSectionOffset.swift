@@ -11,16 +11,12 @@ import Differ // for query source
 import RxSwift
 
 
-protocol DataSection {
-
-}
-
-struct IndexPathOffset {
+public struct IndexPathOffset {
     var absolute: IndexPath
     var inSection: IndexPath
 }
 
-protocol CollectionOffset: class {
+public protocol CollectionOffset: class {
     var baseOffset: IndexPath { get set }
     var totalSections: () -> Int { get set }
     var rebase: () -> Void { get set }
@@ -30,7 +26,7 @@ protocol CollectionOffset: class {
 }
 
 
-extension CollectionOffset {
+public extension CollectionOffset {
     func relativePathFrom(absolute: IndexPath) -> IndexPath {
         return IndexPath(row: absolute.row, section: absolute.section - baseOffset.section)
     }
@@ -47,15 +43,15 @@ extension CollectionOffset {
 }
 
 
-protocol CollectionViewSectionDataSource: UICollectionViewDataSource, CollectionOffset {}
-protocol CollectionViewNestedDelegateType: UICollectionViewDelegateFlowLayout, CollectionOffset {}
+public protocol CollectionViewSectionDataSource: UICollectionViewDataSource, CollectionOffset {}
+public protocol CollectionViewNestedDelegateType: UICollectionViewDelegateFlowLayout, CollectionOffset {}
 
 protocol CollectionViewCompositeConfiguration {
     var dataSource: CompositeCollectionDataSource { get }
     var delegate: CollectionViewCompositeDelegate? { get }
 }
 
-protocol CollectionViewNestedConfiguration {
+public protocol CollectionViewNestedConfiguration {
     var dataSource: CollectionViewSectionDataSource { get }
     var delegate: CollectionViewNestedDelegateType? { get }
 }
@@ -63,7 +59,7 @@ protocol CollectionViewNestedConfiguration {
 
 
 
-protocol CollectionViewDelegateOverride: CollectionViewNestedDelegateType {
+public protocol CollectionViewDelegateOverride: CollectionViewNestedDelegateType {
 
     var shouldHighlightItemAt: ((UICollectionView, IndexPathOffset) -> Bool)? { get }
     var didHighlightItemAt: ((UICollectionView, IndexPathOffset) -> Void)? { get }

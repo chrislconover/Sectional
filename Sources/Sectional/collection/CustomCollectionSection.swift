@@ -8,7 +8,7 @@
 import UIKit
 
 
-struct CustomCellModel {
+public struct CustomCellModel {
     init(build: @escaping (UICollectionView, IndexPathOffset) -> UICollectionViewCell,
          sizeForItem: ((UICollectionView, IndexPath) -> CGSize)? = nil,
          shouldSelectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)? = nil,
@@ -48,14 +48,14 @@ struct CustomCellModel {
 }
 
 
-class CustomSectionSource: NSObject, CollectionViewNestedConfiguration, CollectionViewSectionDataSource, CollectionViewNestedDelegateType {
+public class CustomSectionSource: NSObject, CollectionViewNestedConfiguration, CollectionViewSectionDataSource, CollectionViewNestedDelegateType {
 
-    var dataSource: CollectionViewSectionDataSource { return self }
-    var delegate: CollectionViewNestedDelegateType?
+    public var dataSource: CollectionViewSectionDataSource { return self }
+    public var delegate: CollectionViewNestedDelegateType?
 
-    var baseOffset: IndexPath = IndexPath()
-    var rebase: () -> Void = {}
-    var totalSections: () -> Int = { 1 }
+    public var baseOffset: IndexPath = IndexPath()
+    public var rebase: () -> Void = {}
+    public var totalSections: () -> Int = { 1 }
 
     fileprivate init(
         cells: [CustomCellModel],
@@ -80,26 +80,26 @@ class CustomSectionSource: NSObject, CollectionViewNestedConfiguration, Collecti
 
 
     // MARK: selection
-    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+    public func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         return cells[indexPath.item].shouldSelectItemAt?(
             collectionView, pathOffset(absolute: indexPath)) ?? true
     }
 
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         cells[indexPath.item].didSelectItemAt?(collectionView, pathOffset(absolute: indexPath))
     }
 
-    func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
+    public func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
         return cells[indexPath.item].shouldDeselectItemAt?(
             collectionView, pathOffset(absolute: indexPath)) ?? true
     }
 
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+    public func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         cells[indexPath.item].didDeselectItemAt?(collectionView, pathOffset(absolute: indexPath))
     }
 
     // MARK: header
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+    public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         guard let viewForSupplementaryElementOfKind = viewForSupplementaryElementOfKind
             else { fatalError("Must return valid view if specified via layout") }
         return viewForSupplementaryElementOfKind(collectionView, kind, pathOffset(absolute: indexPath))
@@ -111,8 +111,7 @@ class CustomSectionSource: NSObject, CollectionViewNestedConfiguration, Collecti
 
 extension UICollectionView {
 
-
-    func sectionDataSource(
+    public func dataSource(
         with cells: [CustomCellModel],
         configure: ((CustomSectionSource, UICollectionView) -> Void)? = nil,
         withDelegate: ((CustomSectionSource, CollectionViewSectionDelegate) -> Void)? = nil) -> CustomSectionSource {
@@ -132,10 +131,10 @@ extension UICollectionView {
         return section
     }
 
-    func sectionDataSource(
+    public func dataSource(
         with cells: CustomCellModel...,
         configure: ((CustomSectionSource, UICollectionView) -> Void)? = nil,
         withDelegate: ((CustomSectionSource, CollectionViewSectionDelegate) -> Void)? = nil) -> CustomSectionSource {
-        return self.sectionDataSource(with: cells, configure: configure, withDelegate: withDelegate)
+        return self.dataSource(with: cells, configure: configure, withDelegate: withDelegate)
     }
 }

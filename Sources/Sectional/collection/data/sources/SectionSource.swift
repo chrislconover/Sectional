@@ -1,5 +1,5 @@
 //
-//  DiffingCollectionSection.swift
+//  CollectionSection.swift
 //  Sectional
 //
 //  Created by Chris Conover on 9/17/18.
@@ -7,12 +7,12 @@
 
 import UIKit
 
-public class CollectionDiffingSource<T>: CollectionSectionDataSourceBase {
+public class CollectionSource<T>: CollectionSectionDataSourceBase {
 
     internal init(collectionView: UICollectionView,
                   data: [T],
                   isEqual: @escaping (T, T) -> Bool,
-                  onUpdate: UpdateAnimationStrategy<T>,
+                  onUpdate: CollectionAnimationStrategy<T>,
                   build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell) {
 
         self.collectionView = collectionView
@@ -37,10 +37,10 @@ public class CollectionDiffingSource<T>: CollectionSectionDataSourceBase {
 
     var isEqual: (T, T) -> Bool
     var collectionView: UICollectionView
-    var onUpdate: UpdateAnimationStrategy<T>
+    var onUpdate: CollectionAnimationStrategy<T>
 }
 
-public class UpdateAnimationStrategy<T> {
+public class CollectionAnimationStrategy<T> {
 
     func update(_ collectionView: UICollectionView,
                 offset: CollectionOffset,
@@ -53,9 +53,9 @@ public class UpdateAnimationStrategy<T> {
 }
 
 
-extension UpdateAnimationStrategy {
+extension CollectionAnimationStrategy {
 
-    public class None: UpdateAnimationStrategy {
+    public class None: CollectionAnimationStrategy {
         override func update(_ collectionView: UICollectionView,
                              offset: CollectionOffset,
                              from oldValue: [T],
@@ -66,12 +66,12 @@ extension UpdateAnimationStrategy {
         }
     }
 
-    public static var none: UpdateAnimationStrategy { return None() }
+    public static var none: CollectionAnimationStrategy { return None() }
 }
 
 
-extension UpdateAnimationStrategy {
-    public class Animate: UpdateAnimationStrategy {
+extension CollectionAnimationStrategy {
+    public class Animate: CollectionAnimationStrategy {
         override func update(_ collectionView: UICollectionView,
                              offset: CollectionOffset,
                              from oldValue: [T],
@@ -107,7 +107,7 @@ extension UpdateAnimationStrategy {
         }
     }
 
-    public static var animate: UpdateAnimationStrategy { return Animate() }
+    public static var animate: CollectionAnimationStrategy { return Animate() }
 }
 
 extension UICollectionView {
@@ -115,13 +115,13 @@ extension UICollectionView {
 
     public func sectionData<T>(_ data: [T],
                                isEqual: @escaping (T, T) -> Bool,
-                               onUpdate: UpdateAnimationStrategy<T> = .animate,
+                               onUpdate: CollectionAnimationStrategy<T> = .animate,
                                build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
                                configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
-                               withDelegate: ((CollectionDiffingSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
-        -> CollectionDiffingSource<T> {
+                               withDelegate: ((CollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
+        -> CollectionSource<T> {
 
-            let dataSource = CollectionDiffingSource<T>(
+            let dataSource = CollectionSource<T>(
                 collectionView: self, data: data,
                 isEqual: isEqual,
                 onUpdate: onUpdate,
@@ -139,12 +139,12 @@ extension UICollectionView {
     public func sectionData<T>(diffing data: [T],
                                build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
                                isEqual: @escaping (T, T) -> Bool,
-                               onUpdate: UpdateAnimationStrategy<T> = .animate,
+                               onUpdate: CollectionAnimationStrategy<T> = .animate,
                                configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
-                               withDelegate: ((CollectionDiffingSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
-        -> CollectionDiffingSource<T> {
+                               withDelegate: ((CollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
+        -> CollectionSource<T> {
 
-            let dataSource = CollectionDiffingSource<T>(
+            let dataSource = CollectionSource<T>(
                 collectionView: self, data: data,
                 isEqual: isEqual,
                 onUpdate: onUpdate,
@@ -160,13 +160,13 @@ extension UICollectionView {
     }
 
     public func sectionData<T>(_ data: [T],
-                               onUpdate: UpdateAnimationStrategy<T> = .animate,
+                               onUpdate: CollectionAnimationStrategy<T> = .animate,
         build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
         configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
-        withDelegate: ((CollectionDiffingSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
-        -> CollectionDiffingSource<T> where T: Equatable {
+        withDelegate: ((CollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
+        -> CollectionSource<T> where T: Equatable {
 
-            let dataSource = CollectionDiffingSource<T>(
+            let dataSource = CollectionSource<T>(
                 collectionView: self, data: data,
                 isEqual: ==,
                 onUpdate: onUpdate,

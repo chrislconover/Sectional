@@ -10,12 +10,12 @@ import RxSwift
 
 
 /// ObservableCollectionSource: simplified collection data source that directly acts upon a RxSwift collection, eliminating the need for the intermediate Query Source.
-public class ObservableCollectionSource<T>: CollectionDiffingSource<T> {
+public class ObservableCollectionSource<T>: CollectionSource<T> {
 
     fileprivate init(collectionView: UICollectionView,
                      defer source: Observable<[T]>,
                      isEqual: @escaping (T, T) -> Bool,
-                     onUpdate: UpdateAnimationStrategy<T> = .animate,
+                     onUpdate: CollectionAnimationStrategy<T> = .animate,
                      build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
                      onError: ((Error) -> Void)?) {
         self.source = source

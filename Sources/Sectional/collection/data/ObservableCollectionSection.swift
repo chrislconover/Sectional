@@ -10,28 +10,30 @@ import RxSwift
 
 
 /// ObservableCollectionSource: simplified collection data source that directly acts upon a RxSwift collection, eliminating the need for the intermediate Query Source.
-class ObservableCollectionSource<T>: CollectionDiffingSource<T> {
+public class ObservableCollectionSource<T>: CollectionDiffingSource<T> {
 
     fileprivate init(collectionView: UICollectionView,
                      defer source: Observable<[T]>,
                      isEqual: @escaping (T, T) -> Bool,
+                     onUpdate: UpdateAnimationStrategy<T> = .animate,
                      build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
                      onError: ((Error) -> Void)?) {
         self.source = source
-        super.init(collectionView: collectionView, data: [], isEqual: isEqual, build: build)
+        super.init(collectionView: collectionView, data: [],
+                   isEqual: isEqual, onUpdate: onUpdate, build: build)
     }
 
-    func bind(_ source: Observable<[T]>) {
+    public func bind(_ source: Observable<[T]>) {
         disposeBag = DisposeBag()
         source.subscribe(
             onNext: { [unowned self] data in self.data = data },
             onError: { [unowned self] error in self.onError?(error) },
             onCompleted: {},
             onDisposed: {})
-        .disposed(by: disposeBag)
+            .disposed(by: disposeBag)
     }
 
-    func commit() {
+    public func commit() {
         guard let source = source else { return }
         bind(source)
         self.source = nil
@@ -44,12 +46,23 @@ class ObservableCollectionSource<T>: CollectionDiffingSource<T> {
 
 extension UICollectionView {
 
-    func sectionData<T>(commit source: Observable<[T]>,
-                        isEqual: @escaping (T, T) -> Bool,
-                        build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
-                        onError: ((Error) -> Void)? = nil,
-                        configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
-                        withDelegate: ((ObservableCollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
+    public func sectionData<T: Equatable>(commit source: Observable<[T]>,
+                               build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
+                               onError: ((Error) -> Void)? = nil,
+                               configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
+                               withDelegate: ((ObservableCollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
+        -> ObservableCollectionSource<T> {
+            return sectionData(commit: source, isEqual: ==,
+                               build: build, onError: onError,
+                               configure: configure, withDelegate: withDelegate)
+    }
+
+    public func sectionData<T>(commit source: Observable<[T]>,
+                               isEqual: @escaping (T, T) -> Bool,
+                               build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
+                               onError: ((Error) -> Void)? = nil,
+                               configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
+                               withDelegate: ((ObservableCollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
         -> ObservableCollectionSource<T> {
 
             let dataSource = ObservableCollectionSource<T>(
@@ -73,12 +86,23 @@ extension UICollectionView {
             return dataSource
     }
 
-    func sectionData<T>(defer source: Observable<[T]>,
-                        isEqual: @escaping (T, T) -> Bool,
-                        build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
-                        onError: ((Error) -> Void)? = nil,
-                        configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
-                        withDelegate: ((ObservableCollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
+    public func sectionData<T: Equatable>(defer source: Observable<[T]>,
+                                          build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
+                                          onError: ((Error) -> Void)? = nil,
+                                          configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
+                                          withDelegate: ((ObservableCollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
+        -> ObservableCollectionSource<T> {
+            return sectionData(commit: source, isEqual: ==,
+                               build: build, onError: onError,
+                               configure: configure, withDelegate: withDelegate)
+    }
+
+    public func sectionData<T>(defer source: Observable<[T]>,
+                               isEqual: @escaping (T, T) -> Bool,
+                               build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
+                               onError: ((Error) -> Void)? = nil,
+                               configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
+                               withDelegate: ((ObservableCollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
         -> ObservableCollectionSource<T> {
 
             let dataSource = ObservableCollectionSource<T>(

@@ -30,7 +30,7 @@ public class GroupingObservableSource<T, K>: GroupingCollectionSource<T, K>
                    build: build)
     }
 
-    func bind(_ source: Observable<[T]>) {
+    public func bind(_ source: Observable<[T]>) {
         disposeBag = DisposeBag()
         source.subscribe(
             onNext: { [unowned self] data in self.data = data },
@@ -40,7 +40,7 @@ public class GroupingObservableSource<T, K>: GroupingCollectionSource<T, K>
             .disposed(by: disposeBag)
     }
 
-    func commit() {
+    public func commit() {
         guard let source = source else { return }
         bind(source)
         self.source = nil
@@ -54,15 +54,15 @@ public class GroupingObservableSource<T, K>: GroupingCollectionSource<T, K>
 extension UICollectionView {
 
     public func sectionData<T, K>(commit source: Observable<[T]>,
-                           isEqual: @escaping (T, T) -> Bool,
-                           groupBy: @escaping (T) -> K,
-                           prepare: ((UICollectionView)->())? = nil,
-                           build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
-                           viewForSupplementaryElementOfKind: @escaping ((GroupingObservableSource<T, K>, UICollectionView, String, IndexPathOffset) -> UICollectionReusableView),
-                           referenceSizeForHeaderInSection: ((UICollectionView, UICollectionViewLayout, Int) -> CGSize)? = nil,
-                           onError: ((Error) -> Void)? = nil,
-                           configure: ((GroupingObservableSource<T, K>, UICollectionView) -> ())? = nil,
-                           withDelegate: ((GroupingObservableSource<T, K>, CollectionViewSectionDelegate) -> Void)? = nil)
+                                  isEqual: @escaping (T, T) -> Bool,
+                                  groupBy: @escaping (T) -> K,
+                                  prepare: ((UICollectionView)->())? = nil,
+                                  build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
+                                  viewForSupplementaryElementOfKind: @escaping ((GroupingObservableSource<T, K>, UICollectionView, String, IndexPathOffset) -> UICollectionReusableView),
+                                  referenceSizeForHeaderInSection: ((UICollectionView, UICollectionViewLayout, Int) -> CGSize)? = nil,
+                                  onError: ((Error) -> Void)? = nil,
+                                  configure: ((GroupingObservableSource<T, K>, UICollectionView) -> ())? = nil,
+                                  withDelegate: ((GroupingObservableSource<T, K>, CollectionViewSectionDelegate) -> Void)? = nil)
         -> GroupingObservableSource<T, K> where K: Comparable & Hashable {
             let dataSource = self.sectionData(
                 defer: source,
@@ -80,15 +80,15 @@ extension UICollectionView {
     }
 
     public func sectionData<T, K>(defer source: Observable<[T]>,
-                        isEqual: @escaping (T, T) -> Bool,
-                        groupBy: @escaping (T) -> K,
-                        prepare: ((UICollectionView)->())? = nil,
-                        build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
-                        viewForSupplementaryElementOfKind: @escaping ((GroupingObservableSource<T, K>, UICollectionView, String, IndexPathOffset) -> UICollectionReusableView),
-                        referenceSizeForHeaderInSection: ((UICollectionView, UICollectionViewLayout, Int) -> CGSize)? = nil,
-                        onError: ((Error) -> Void)? = nil,
-                        configure: ((GroupingObservableSource<T, K>, UICollectionView) -> ())? = nil,
-                        withDelegate: ((GroupingObservableSource<T, K>, CollectionViewSectionDelegate) -> Void)? = nil) -> GroupingObservableSource<T, K>
+                                  isEqual: @escaping (T, T) -> Bool,
+                                  groupBy: @escaping (T) -> K,
+                                  prepare: ((UICollectionView)->())? = nil,
+                                  build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
+                                  viewForSupplementaryElementOfKind: @escaping ((GroupingObservableSource<T, K>, UICollectionView, String, IndexPathOffset) -> UICollectionReusableView),
+                                  referenceSizeForHeaderInSection: ((UICollectionView, UICollectionViewLayout, Int) -> CGSize)? = nil,
+                                  onError: ((Error) -> Void)? = nil,
+                                  configure: ((GroupingObservableSource<T, K>, UICollectionView) -> ())? = nil,
+                                  withDelegate: ((GroupingObservableSource<T, K>, CollectionViewSectionDelegate) -> Void)? = nil) -> GroupingObservableSource<T, K>
         where K: Comparable & Hashable {
 
             let dataSource = GroupingObservableSource<T, K>(

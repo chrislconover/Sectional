@@ -25,12 +25,12 @@ public class GroupingCollectionSource<T, K>: CollectionSectionDataSourceBase
         self.prepare = prepare
         self.current = SectionedUpdates(initial: data, groupBy: groupBy)
         super.init()
-
+        
         indexTitles = { [unowned self] collection in
             self.current.sectionKeys.map { $0.description } }
         indexPathForTitleAt = { collection, title, at in
             IndexPath(item: 0, section: at) }
-
+        
         totalSections = { [unowned self] in
             // assume just this section, unless overriden by outer composite
             self.current.sections.count
@@ -48,26 +48,26 @@ public class GroupingCollectionSource<T, K>: CollectionSectionDataSourceBase
             build(collectionView, path, self.current.sections[path.section][path.row])
         }
     }
-
+    
     func at(index: Int) -> T { return data[index] }
     var data: [T] { didSet {
         current = SectionedUpdates<T, K>(
             fromSorted: oldValue, toSorted: data,
             isEqual: isEqual, groupBy: groupBy)
         }}
-
+    
     var current: SectionedUpdates<T, K> {
         didSet {
-
+            
             if current.sectionKeys.count != oldValue.sectionKeys.count {
                 rebase()
             }
-
+            
             let insertions = current.insertions.map(self.dataSource.absolutePathFrom)
             let deletions = current.deletions.map(self.dataSource.absolutePathFrom)
             assert(insertions.sorted() == insertions)
             assert(deletions.sorted() == deletions)
-
+            
             // if this is the only section builder
             if totalSections() - current.sections.count == 0 {
                 // and there were no previous entries
@@ -78,7 +78,7 @@ public class GroupingCollectionSource<T, K>: CollectionSectionDataSourceBase
                     return
                 }
             }
-
+            
             guard current.hasChanges else { return }
             self.collectionView.performBatchUpdates({
                 self.collectionView.deleteItems(at: deletions)
@@ -92,7 +92,7 @@ public class GroupingCollectionSource<T, K>: CollectionSectionDataSourceBase
             })
         }
     }
-
+    
     var isEqual: (T, T) -> Bool
     var groupBy: (T) -> K
     var prepare: ((UICollectionView)->())? = nil

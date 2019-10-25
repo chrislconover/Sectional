@@ -49,8 +49,8 @@ public class GroupingCollectionSource<T, K>: CollectionSectionDataSourceBase
         }
     }
     
-    func at(index: Int) -> T { return data[index] }
-    var data: [T] { didSet {
+    public func at(_ index: Int) -> T { return data[index] }
+    internal var data: [T] { didSet {
         current = SectionedUpdates<T, K>(
             fromSorted: oldValue, toSorted: data,
             isEqual: isEqual, groupBy: groupBy)

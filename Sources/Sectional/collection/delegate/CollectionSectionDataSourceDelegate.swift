@@ -20,48 +20,48 @@ public class CollectionViewSectionDelegate: NSObject,  CollectionViewNestedDeleg
     public var rebase: () -> Void = {}
     public var totalSections: () -> Int = { 1 }
 
-    var shouldHighlightItemAt: ((UICollectionView, IndexPathOffset) -> Bool)?
-    var didHighlightItemAt: ((UICollectionView, IndexPathOffset) -> Void)?
-    var didUnhighlightItemAt: ((UICollectionView, IndexPathOffset) -> Void)?
+    public var shouldHighlightItemAt: ((UICollectionView, IndexPathOffset) -> Bool)?
+    public var didHighlightItemAt: ((UICollectionView, IndexPathOffset) -> Void)?
+    public var didUnhighlightItemAt: ((UICollectionView, IndexPathOffset) -> Void)?
 
-    var shouldSelectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)?
-    var shouldDeselectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)? // called when the user taps on an already-selected item in multi-select mode
-    var didSelectItemAt: ((UICollectionView, IndexPathOffset) -> Void)?
-    var didDeselectItemAt: ((UICollectionView, IndexPathOffset) -> Void)?
+    public var shouldSelectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)?
+    public var shouldDeselectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)? // called when the user taps on an already-selected item in multi-select mode
+    public var didSelectItemAt: ((UICollectionView, IndexPathOffset) -> Void)?
+    public var didDeselectItemAt: ((UICollectionView, IndexPathOffset) -> Void)?
 
-    var willDisplay: ((UICollectionView, UICollectionViewCell, IndexPathOffset) -> Void)?
-    var willDisplaySupplementaryView: ((UICollectionView, UICollectionReusableView, String, IndexPathOffset) -> Void)?
-    var didEndDisplaying: ((UICollectionView, UICollectionViewCell, IndexPathOffset) -> Void)?
-    var didEndDisplayingSupplementaryView: ((UICollectionView, UICollectionReusableView, String, IndexPathOffset) -> Void)?
+    public var willDisplay: ((UICollectionView, UICollectionViewCell, IndexPathOffset) -> Void)?
+    public var willDisplaySupplementaryView: ((UICollectionView, UICollectionReusableView, String, IndexPathOffset) -> Void)?
+    public var didEndDisplaying: ((UICollectionView, UICollectionViewCell, IndexPathOffset) -> Void)?
+    public var didEndDisplayingSupplementaryView: ((UICollectionView, UICollectionReusableView, String, IndexPathOffset) -> Void)?
 
-    var shouldShowMenuForItemAt: ((UICollectionView, IndexPathOffset) -> Bool)?
-    var canPerformAction: ((UICollectionView, Selector, IndexPathOffset, Any?) -> Bool)?
-    var performAction: ((UICollectionView, Selector, IndexPathOffset, Any?) -> Void)?
+    public var shouldShowMenuForItemAt: ((UICollectionView, IndexPathOffset) -> Bool)?
+    public var canPerformAction: ((UICollectionView, Selector, IndexPathOffset, Any?) -> Bool)?
+    public var performAction: ((UICollectionView, Selector, IndexPathOffset, Any?) -> Void)?
 
     // Focus
-    var canFocusItemAt: ((UICollectionView, IndexPathOffset) -> Bool)?
+    public var canFocusItemAt: ((UICollectionView, IndexPathOffset) -> Bool)?
 
-    var targetIndexPathForMoveFromItemAt: ((UICollectionView, IndexPathOffset, IndexPathOffset) -> IndexPath)?
+    public var targetIndexPathForMoveFromItemAt: ((UICollectionView, IndexPathOffset, IndexPathOffset) -> IndexPath)?
 
-    var shouldSpringLoadItemAt: ((UICollectionView, IndexPathOffset, UISpringLoadedInteractionContext) -> Bool)?
+    public var shouldSpringLoadItemAt: ((UICollectionView, IndexPathOffset, UISpringLoadedInteractionContext) -> Bool)?
 
     // UICollectionViewDelegateFlowLayout
-    var sizeForItemWithLayoutAt: ((UICollectionView, UICollectionViewLayout, IndexPathOffset) -> CGSize)? {
+    public var sizeForItemWithLayoutAt: ((UICollectionView, UICollectionViewLayout, IndexPathOffset) -> CGSize)? {
         didSet { supportedSelectors[.sizeForItemAt] = true }}
 
-    var insetForSectionAt: ((UICollectionView, UICollectionViewLayout, Int) -> UIEdgeInsets)? {
+    public var insetForSectionAt: ((UICollectionView, UICollectionViewLayout, Int) -> UIEdgeInsets)? {
         didSet { supportedSelectors[.insetForSectionAt] = true }}
 
-    var minimumLineSpacingForSectionAt: ((UICollectionView, UICollectionViewLayout, Int) -> CGFloat)? {
+    public var minimumLineSpacingForSectionAt: ((UICollectionView, UICollectionViewLayout, Int) -> CGFloat)? {
         didSet { supportedSelectors[.minimumLineSpacingForSectionAt] = true }}
 
-    var minimumInteritemSpacingForSectionAt: ((UICollectionView, UICollectionViewLayout, Int) -> CGFloat)? {
+    public var minimumInteritemSpacingForSectionAt: ((UICollectionView, UICollectionViewLayout, Int) -> CGFloat)? {
         didSet { supportedSelectors[.minimumInteritemSpacingForSectionAt] = true }}
 
-    var referenceSizeForHeaderInSection: ((UICollectionView, UICollectionViewLayout, Int) -> CGSize)? {
+    public var referenceSizeForHeaderInSection: ((UICollectionView, UICollectionViewLayout, Int) -> CGSize)? {
         didSet { supportedSelectors[.referenceSizeForHeaderInSection] = true }}
 
-    var referenceSizeForFooterInSection: ((UICollectionView, UICollectionViewLayout, Int) -> CGSize)? {
+    public var referenceSizeForFooterInSection: ((UICollectionView, UICollectionViewLayout, Int) -> CGSize)? {
         didSet { supportedSelectors[.referenceSizeForFooterInSection] = true }}
 
     private var supportedSelectors: [Selector: Bool] = [

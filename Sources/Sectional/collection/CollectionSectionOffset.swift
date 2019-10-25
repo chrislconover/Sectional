@@ -12,8 +12,8 @@ import RxSwift
 
 
 public struct IndexPathOffset {
-    var absolute: IndexPath
-    var inSection: IndexPath
+    public var absolute: IndexPath
+    public var inSection: IndexPath
 }
 
 public protocol CollectionOffset: class {

@@ -11,13 +11,10 @@ public class CollectionSource<T>: CollectionSectionDataSourceBase {
 
     internal init(collectionView: UICollectionView,
                   data: [T],
-                  isEqual: @escaping (T, T) -> Bool,
-                  onUpdate: CollectionAnimationStrategy<T>,
-                  build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell) {
-
+                  build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
+                  onUpdate: CollectionAnimationStrategy<T>) {
         self.collectionView = collectionView
         self.data = data
-        self.isEqual = isEqual
         self.onUpdate = onUpdate
         super.init()
         numberOfSections = { _ in return 1 }
@@ -27,17 +24,13 @@ public class CollectionSource<T>: CollectionSectionDataSourceBase {
         }
     }
 
-    func at(index: Int) -> T { return data[index] }
-    var data: [T] { didSet {
+    public func at(_ index: Int) -> T { return data[index] }
+    internal var data: [T] { didSet {
         onUpdate.update(collectionView,
                         offset: self.dataSource,
-                        from: oldValue, to: data,
-                        isEqual: isEqual)
-        }}
-
-    var isEqual: (T, T) -> Bool
-    var collectionView: UICollectionView
-    var onUpdate: CollectionAnimationStrategy<T>
+                        from: oldValue, to: data) }}
+    fileprivate var collectionView: UICollectionView
+    fileprivate var onUpdate: CollectionAnimationStrategy<T>
 }
 
 public class CollectionAnimationStrategy<T> {
@@ -46,7 +39,6 @@ public class CollectionAnimationStrategy<T> {
                 offset: CollectionOffset,
                 from oldValue: [T],
                 to data: [T],
-                isEqual: (T, T) -> Bool,
                 completion: ((Bool) -> Void)? = nil) {
         fatalError("Abstract base")
     }
@@ -60,7 +52,6 @@ extension CollectionAnimationStrategy {
                              offset: CollectionOffset,
                              from oldValue: [T],
                              to data: [T],
-                             isEqual: (T, T) -> Bool,
                              completion: ((Bool) -> Void)? = nil) {
             collectionView.reloadData()
         }
@@ -72,11 +63,16 @@ extension CollectionAnimationStrategy {
 
 extension CollectionAnimationStrategy {
     public class Animate: CollectionAnimationStrategy {
+
+        var isEqual: (T, T) -> Bool
+        init(_ isEqual: @escaping (T, T) -> Bool) {
+            self.isEqual = isEqual
+        }
+
         override func update(_ collectionView: UICollectionView,
                              offset: CollectionOffset,
                              from oldValue: [T],
                              to data: [T],
-                             isEqual: (T, T) -> Bool,
                              completion: ((Bool) -> Void)? = nil) {
             guard let dataSource = collectionView.dataSource else { return }
 
@@ -107,25 +103,30 @@ extension CollectionAnimationStrategy {
         }
     }
 
-    public static var animate: CollectionAnimationStrategy { return Animate() }
+    public static func animate(_ isEqual: @escaping (T, T) -> Bool)
+        -> CollectionAnimationStrategy {
+            return Animate(isEqual)
+    }
+}
+
+extension CollectionAnimationStrategy where T: Equatable {
+    public static var animate: CollectionAnimationStrategy { return Animate(==) }
 }
 
 extension UICollectionView {
 
 
     public func sectionData<T>(_ data: [T],
-                               isEqual: @escaping (T, T) -> Bool,
-                               onUpdate: CollectionAnimationStrategy<T> = .animate,
                                build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
+                               onUpdate: CollectionAnimationStrategy<T>,
                                configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
                                withDelegate: ((CollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
         -> CollectionSource<T> {
 
             let dataSource = CollectionSource<T>(
                 collectionView: self, data: data,
-                isEqual: isEqual,
-                onUpdate: onUpdate,
-                build: build)
+                build: build,
+                onUpdate: onUpdate)
             configure?(dataSource, self)
 
             if let withDelegate = withDelegate {
@@ -136,41 +137,18 @@ extension UICollectionView {
             return dataSource
     }
 
-    public func sectionData<T>(diffing data: [T],
-                               build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
-                               isEqual: @escaping (T, T) -> Bool,
-                               onUpdate: CollectionAnimationStrategy<T> = .animate,
-                               configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
-                               withDelegate: ((CollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
-        -> CollectionSource<T> {
-
-            let dataSource = CollectionSource<T>(
-                collectionView: self, data: data,
-                isEqual: isEqual,
-                onUpdate: onUpdate,
-                build: build)
-            configure?(dataSource, self)
-
-            if let withDelegate = withDelegate {
-                let delegate = CollectionViewSectionDelegate()
-                withDelegate(dataSource, delegate)
-                dataSource.delegate = delegate
-            }
-            return dataSource
-    }
-
-    public func sectionData<T>(_ data: [T],
-                               onUpdate: CollectionAnimationStrategy<T> = .animate,
+    public func sectionData<T>(
+        _ data: [T],
         build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
+        onUpdate: CollectionAnimationStrategy<T> = .animate,
         configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
         withDelegate: ((CollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
         -> CollectionSource<T> where T: Equatable {
 
             let dataSource = CollectionSource<T>(
                 collectionView: self, data: data,
-                isEqual: ==,
-                onUpdate: onUpdate,
-                build: build)
+                build: build,
+                onUpdate: onUpdate)
             configure?(dataSource, self)
 
             if let withDelegate = withDelegate {

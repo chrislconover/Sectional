@@ -13,6 +13,7 @@ public class CollectionSource<T>: CollectionSectionDataSourceBase {
                   data: [T],
                   build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
                   onUpdate: CollectionAnimationStrategy<T>) {
+//        assert(data.count > 0)
         self.collectionView = collectionView
         self.data = data
         self.onUpdate = onUpdate
@@ -25,7 +26,7 @@ public class CollectionSource<T>: CollectionSectionDataSourceBase {
     }
 
     public func at(_ index: Int) -> T { return data[index] }
-    internal var data: [T] { didSet {
+    public var data: [T] { didSet {
         onUpdate.update(collectionView,
                         offset: self.dataSource,
                         from: oldValue, to: data) }}
@@ -94,6 +95,7 @@ extension CollectionAnimationStrategy {
             }
 
             guard updates.hasChanges else {
+                collectionView.reloadData()
                 return
             }
             collectionView.performBatchUpdates({

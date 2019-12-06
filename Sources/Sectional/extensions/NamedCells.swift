@@ -20,7 +20,7 @@ public extension NamedCell where Self: UITableViewCell {
 
 extension UITableViewCell: NamedCell {}
 extension NamedCell where Self: UICollectionReusableView {
-    public static var name: String { return String(describing: Self.self) }
+    public static var name: String { String(reflecting: Self.self) }
 }
 
 public extension UICollectionView {
@@ -56,7 +56,7 @@ public extension UICollectionView {
     }
 
     func dequeue<T:UICollectionViewCell>(_ type: T.Type = T.self, for path: IndexPath) -> T {
-        return dequeueReusableCell(withReuseIdentifier: T.name, for: path) as! T
+        dequeueReusableCell(withReuseIdentifier: T.name, for: path) as! T
     }
 
     func dequeue<T:UICollectionReusableView>(_ type: T.Type = T.self, ofKind kind: String,

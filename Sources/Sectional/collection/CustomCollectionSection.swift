@@ -9,12 +9,14 @@ import UIKit
 
 
 public struct CustomCellModel {
-    init(build: @escaping (UICollectionView, IndexPathOffset) -> UICollectionViewCell,
+    init(register: @escaping (UICollectionView) -> Void,
+         build: @escaping (UICollectionView, IndexPathOffset) -> UICollectionViewCell,
          sizeForItem: ((UICollectionView, IndexPath) -> CGSize)? = nil,
          shouldSelectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)? = nil,
          didSelectItemAt: ((UICollectionView, IndexPathOffset) -> Void)? = nil,
          shouldDeselectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)? = nil,
          didDeselectItemAt: ((UICollectionView, IndexPathOffset) -> Void)? = nil) {
+        self.register = register
         self.build = build
         self.sizeForItem = sizeForItem
         self.shouldSelectItemAt = shouldSelectItemAt
@@ -23,21 +25,28 @@ public struct CustomCellModel {
         self.didDeselectItemAt = didDeselectItemAt
     }
 
+    var register: (UICollectionView) -> Void
     var build: (UICollectionView, IndexPathOffset) -> UICollectionViewCell
     var sizeForItem: ((UICollectionView, IndexPath) -> CGSize)?
     var shouldSelectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)?
     var didSelectItemAt: ((UICollectionView, IndexPathOffset) -> Void)?
     var shouldDeselectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)?
     var didDeselectItemAt: ((UICollectionView, IndexPathOffset) -> Void)?
+}
 
-    static func cell(
-        build: @escaping (UICollectionView, IndexPathOffset) -> UICollectionViewCell,
+
+public extension UICollectionViewCell {
+    public static func custom<T: UICollectionViewCell>(
+        type: T.Type,
+        build: @escaping (UICollectionView, IndexPathOffset) -> T,
         sizeForItem: ((UICollectionView, IndexPath) -> CGSize)? = nil,
         shouldSelectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)? = nil,
         didSelectItemAt: ((UICollectionView, IndexPathOffset) -> Void)? = nil,
         shouldDeselectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)? = nil,
         didDeselectItemAt: ((UICollectionView, IndexPathOffset) -> Void)? = nil) -> CustomCellModel {
-        return CustomCellModel(
+
+        CustomCellModel(
+            register: { (collection: UICollectionView) in collection.register(T.self) },
             build: build,
             sizeForItem: sizeForItem,
             shouldSelectItemAt: shouldSelectItemAt,
@@ -53,7 +62,7 @@ public class CustomSectionSource: NSObject, CollectionViewNestedConfiguration, C
     public var dataSource: CollectionViewSectionDataSource { return self }
     public var delegate: CollectionViewNestedDelegateType?
 
-    public var baseOffset: IndexPath = IndexPath()
+    public var baseOffset: IndexPath = IndexPath(item: 0, section: 0)
     public var rebase: () -> Void = {}
     public var totalSections: () -> Int = { 1 }
 
@@ -66,11 +75,11 @@ public class CustomSectionSource: NSObject, CollectionViewNestedConfiguration, C
         self.delegate = self
     }
 
-    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    public func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
 
-    public func numberOfSections(in collectionView: UICollectionView) -> Int {
+    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return cells.count
     }
 
@@ -115,6 +124,10 @@ extension UICollectionView {
         with cells: [CustomCellModel],
         configure: ((CustomSectionSource, UICollectionView) -> Void)? = nil,
         withDelegate: ((CustomSectionSource, CollectionViewSectionDelegate) -> Void)? = nil) -> CustomSectionSource {
+
+        for cell in cells {
+            cell.register(self)
+        }
 
         let section = CustomSectionSource(cells: cells)
         configure?(section, self)

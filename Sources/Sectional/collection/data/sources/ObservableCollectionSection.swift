@@ -45,12 +45,12 @@ public class ObservableCollectionSource<T>: CollectionSource<T> {
 
 extension UICollectionView {
 
-    public func sectionData<T>(commit source: Observable<[T]>,
-                               build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
-                               onUpdate: CollectionAnimationStrategy<T>,
-                               onError: ((Error) -> Void)? = nil,
-                               configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
-                               withDelegate: ((ObservableCollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
+    public func section<T>(commit source: Observable<[T]>,
+                           build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
+                           onUpdate: CollectionAnimationStrategy<T>,
+                           onError: ((Error) -> Void)? = nil,
+                           configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
+                           withDelegate: ((ObservableCollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
         -> ObservableCollectionSource<T> {
 
             let dataSource = ObservableCollectionSource<T>(
@@ -69,12 +69,12 @@ extension UICollectionView {
     }
 
 
-    public func sectionData<T>(defer source: Observable<[T]>,
-                               build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
-                               onUpdate: CollectionAnimationStrategy<T>,
-                               onError: ((Error) -> Void)? = nil,
-                               configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
-                               withDelegate: ((ObservableCollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
+    public func section<T>(defer source: Observable<[T]>,
+                           build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
+                           onUpdate: CollectionAnimationStrategy<T>,
+                           onError: ((Error) -> Void)? = nil,
+                           configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
+                           withDelegate: ((ObservableCollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
         -> ObservableCollectionSource<T> {
 
             let dataSource = ObservableCollectionSource<T>(

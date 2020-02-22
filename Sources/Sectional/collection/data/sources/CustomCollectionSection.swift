@@ -120,7 +120,7 @@ public class CustomSectionSource: NSObject, CollectionViewNestedConfiguration, C
 
 extension UICollectionView {
 
-    public func dataSource(
+    public func section(
         with cells: [CustomCellModel],
         configure: ((CustomSectionSource, UICollectionView) -> Void)? = nil,
         withDelegate: ((CustomSectionSource, CollectionViewSectionDelegate) -> Void)? = nil) -> CustomSectionSource {
@@ -144,10 +144,10 @@ extension UICollectionView {
         return section
     }
 
-    public func dataSource(
+    public func section(
         with cells: CustomCellModel...,
         configure: ((CustomSectionSource, UICollectionView) -> Void)? = nil,
         withDelegate: ((CustomSectionSource, CollectionViewSectionDelegate) -> Void)? = nil) -> CustomSectionSource {
-        return self.dataSource(with: cells, configure: configure, withDelegate: withDelegate)
+        return self.section(with: cells, configure: configure, withDelegate: withDelegate)
     }
 }

@@ -63,6 +63,12 @@ extension CollectionAnimationStrategy {
 
 
 extension CollectionAnimationStrategy {
+
+    public static func animate(_ isEqual: @escaping (T, T) -> Bool)
+        -> CollectionAnimationStrategy {
+            return Animate(isEqual)
+    }
+
     public class Animate: CollectionAnimationStrategy {
 
         var isEqual: (T, T) -> Bool
@@ -104,11 +110,6 @@ extension CollectionAnimationStrategy {
             }, completion: completion)
         }
     }
-
-    public static func animate(_ isEqual: @escaping (T, T) -> Bool)
-        -> CollectionAnimationStrategy {
-            return Animate(isEqual)
-    }
 }
 
 extension CollectionAnimationStrategy where T: Equatable {
@@ -117,12 +118,11 @@ extension CollectionAnimationStrategy where T: Equatable {
 
 extension UICollectionView {
 
-
-    public func sectionData<T>(_ data: [T],
-                               build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
-                               onUpdate: CollectionAnimationStrategy<T>,
-                               configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
-                               withDelegate: ((CollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
+    public func section<T>(with data: [T],
+                           build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
+                           onUpdate: CollectionAnimationStrategy<T>,
+                           configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
+                           withDelegate: ((CollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
         -> CollectionSource<T> {
 
             let dataSource = CollectionSource<T>(
@@ -139,26 +139,26 @@ extension UICollectionView {
             return dataSource
     }
 
-    public func sectionData<T>(
-        _ data: [T],
-        build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
-        onUpdate: CollectionAnimationStrategy<T> = .animate,
-        configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
-        withDelegate: ((CollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
-        -> CollectionSource<T> where T: Equatable {
-
-            let dataSource = CollectionSource<T>(
-                collectionView: self, data: data,
-                build: build,
-                onUpdate: onUpdate)
-            configure?(dataSource, self)
-
-            if let withDelegate = withDelegate {
-                let delegate = CollectionViewSectionDelegate()
-                withDelegate(dataSource, delegate)
-                dataSource.delegate = delegate
-            }
-            return dataSource
-    }
+//    public func section<T>(
+//        with data: [T],
+//        build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
+//        onUpdate: CollectionAnimationStrategy<T> = .animate,
+//        configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
+//        withDelegate: ((CollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
+//        -> CollectionSource<T> where T: Equatable {
+//
+//            let dataSource = CollectionSource<T>(
+//                collectionView: self, data: data,
+//                build: build,
+//                onUpdate: onUpdate)
+//            configure?(dataSource, self)
+//
+//            if let withDelegate = withDelegate {
+//                let delegate = CollectionViewSectionDelegate()
+//                withDelegate(dataSource, delegate)
+//                dataSource.delegate = delegate
+//            }
+//            return dataSource
+//    }
 }
 

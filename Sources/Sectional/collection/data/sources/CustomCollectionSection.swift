@@ -11,7 +11,7 @@ import UIKit
 public struct CustomCellModel {
     init(register: @escaping (UICollectionView) -> Void,
          build: @escaping (UICollectionView, IndexPathOffset) -> UICollectionViewCell,
-         sizeForItem: ((UICollectionView, IndexPath) -> CGSize)? = nil,
+         sizeForItem: ((UICollectionView, IndexPathOffset) -> CGSize)? = nil,
          shouldSelectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)? = nil,
          didSelectItemAt: ((UICollectionView, IndexPathOffset) -> Void)? = nil,
          shouldDeselectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)? = nil,
@@ -27,7 +27,7 @@ public struct CustomCellModel {
 
     var register: (UICollectionView) -> Void
     var build: (UICollectionView, IndexPathOffset) -> UICollectionViewCell
-    var sizeForItem: ((UICollectionView, IndexPath) -> CGSize)?
+    var sizeForItem: ((UICollectionView, IndexPathOffset) -> CGSize)?
     var shouldSelectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)?
     var didSelectItemAt: ((UICollectionView, IndexPathOffset) -> Void)?
     var shouldDeselectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)?
@@ -39,7 +39,7 @@ public extension UICollectionViewCell {
     public static func custom<T: UICollectionViewCell>(
         type: T.Type,
         build: @escaping (UICollectionView, IndexPathOffset) -> T,
-        sizeForItem: ((UICollectionView, IndexPath) -> CGSize)? = nil,
+        sizeForItem: ((UICollectionView, IndexPathOffset) -> CGSize)? = nil,
         shouldSelectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)? = nil,
         didSelectItemAt: ((UICollectionView, IndexPathOffset) -> Void)? = nil,
         shouldDeselectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)? = nil,
@@ -74,6 +74,14 @@ public class CustomSectionSource: NSObject, CollectionViewNestedConfiguration, C
         super.init()
         self.delegate = self
     }
+    
+    override public func responds(to aSelector: Selector!) -> Bool {
+        if aSelector == Selector.sizeForItemAt {
+            return cells.contains() { $0.sizeForItem != nil }
+        }
+        
+        return super.responds(to: aSelector)
+    }
 
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
@@ -83,6 +91,17 @@ public class CustomSectionSource: NSObject, CollectionViewNestedConfiguration, C
         return cells.count
     }
 
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        guard let size = cells[indexPath.item].sizeForItem?(collectionView, pathOffset(absolute: indexPath)) else {
+            assert(false, "If size is specified for any cell, then it should be specified for all cells")
+            return ((collectionViewLayout as? UICollectionViewFlowLayout)?.estimatedItemSize)
+                ?? ((collectionViewLayout as? UICollectionViewFlowLayout)?.itemSize)
+                ?? .init(width: 39, height: 39) // to make it easier to search
+        }
+        return size
+    }
+    
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         return cells[indexPath.item].build(collectionView, pathOffset(absolute: indexPath))
     }

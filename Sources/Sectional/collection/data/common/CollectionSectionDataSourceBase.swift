@@ -14,7 +14,7 @@ public class CollectionSectionDataSourceBase: NSObject, CollectionViewSectionDat
     var indexPathForTitleAt: ((UICollectionView, String, Int) -> IndexPath)! = nil
 
     init(indexTitles: ((UICollectionView) -> [String]?)! = nil,
-                  indexPathForTitleAt: ((UICollectionView, String, Int) -> IndexPath)! = nil) {
+         indexPathForTitleAt: ((UICollectionView, String, Int) -> IndexPath)! = nil) {
         self.indexTitles = indexTitles
         self.indexPathForTitleAt = indexPathForTitleAt
         super.init()
@@ -88,7 +88,5 @@ public class CollectionSectionDataSourceBase: NSObject, CollectionViewSectionDat
 }
 
 extension CollectionSectionDataSourceBase: CollectionViewNestedConfiguration {
-    public var dataSource: CollectionViewSectionDataSource {
-        return self
-    }
+    public var dataSource: CollectionViewSectionDataSource { self }
 }

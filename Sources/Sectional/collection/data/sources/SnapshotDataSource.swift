@@ -12,8 +12,8 @@ public class CollectionSource<T>: CollectionSectionDataSourceBase {
     internal init(collectionView: UICollectionView,
                   data: [T],
                   build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
-                  onUpdate: CollectionAnimationStrategy<T>) {
-//        assert(data.count > 0)
+                  onUpdate: CollectionAnimationStrategy<T>,
+                  viewForSupplementaryElementOfKind: ((UICollectionView, String, IndexPathOffset) -> UICollectionReusableView)? = nil) {
         self.collectionView = collectionView
         self.data = data
         self.onUpdate = onUpdate
@@ -21,7 +21,10 @@ public class CollectionSource<T>: CollectionSectionDataSourceBase {
         numberOfSections = { _ in return 1 }
         numberOfItemsInSection = { [unowned self] _, _ in self.data.count }
         cellForItemAt = { [unowned self] collectionView, path in
-            build(collectionView, path, self.data[path.row])
+            build(collectionView, path, self.data[path.row]) }
+    
+        if let viewForSupplementaryElementOfKind = viewForSupplementaryElementOfKind {
+            self.viewForSupplementaryElementOfKind = viewForSupplementaryElementOfKind
         }
     }
 
@@ -30,7 +33,7 @@ public class CollectionSource<T>: CollectionSectionDataSourceBase {
         onUpdate.update(collectionView,
                         offset: self.dataSource,
                         from: oldValue, to: data) }}
-    fileprivate var collectionView: UICollectionView
+    var collectionView: UICollectionView
     fileprivate var onUpdate: CollectionAnimationStrategy<T>
 }
 

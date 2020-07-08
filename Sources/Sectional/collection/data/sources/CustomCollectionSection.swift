@@ -7,10 +7,25 @@
 
 import UIKit
 
+public protocol IdentifiableType: Equatable {
+    associatedtype ID : Hashable
+
+    /// The stable identity of the entity associated with `self`.
+    var id: Self.ID { get }
+}
+
+extension CustomCellModel: IdentifiableType {
+    public var id: String { identify() }
+}
+
+extension Equatable where Self: IdentifiableType {
+    public static func ==(lhs: Self, rhs: Self) -> Bool { lhs.id == rhs.id }
+}
 
 public class CustomCellModel {
     init(register: @escaping (UICollectionView) -> Void,
          build: @escaping (UICollectionView, IndexPath) -> UICollectionViewCell,
+         identify: @escaping () -> String,
          sizeForItem: ((UICollectionView, IndexPathOffset) -> CGSize)? = nil,
          shouldSelectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)? = nil,
          didSelectItemAt: ((UICollectionView, IndexPathOffset) -> Void)? = nil,
@@ -18,6 +33,7 @@ public class CustomCellModel {
          didDeselectItemAt: ((UICollectionView, IndexPathOffset) -> Void)? = nil) {
         self.register = register
         self.build = build
+        self.identify = identify
         self.sizeForItem = sizeForItem
         self.shouldSelectItemAt = shouldSelectItemAt
         self.didSelectItemAt = didSelectItemAt
@@ -27,6 +43,7 @@ public class CustomCellModel {
 
     var register: (UICollectionView) -> Void
     var build: (UICollectionView, IndexPath) -> UICollectionViewCell
+    public var identify: () -> String
     var sizeForItem: ((UICollectionView, IndexPathOffset) -> CGSize)?
     var shouldSelectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)?
     var didSelectItemAt: ((UICollectionView, IndexPathOffset) -> Void)?
@@ -39,6 +56,7 @@ public extension UICollectionViewCell {
     public static func custom<T: UICollectionViewCell>(
         type: T.Type,
         build: @escaping (UICollectionView, IndexPath) -> T,
+        identify: @escaping @autoclosure () -> String,
         sizeForItem: ((UICollectionView, IndexPathOffset) -> CGSize)? = nil,
         shouldSelectItemAt: ((UICollectionView, IndexPathOffset) -> Bool)? = nil,
         didSelectItemAt: ((UICollectionView, IndexPathOffset) -> Void)? = nil,
@@ -48,6 +66,7 @@ public extension UICollectionViewCell {
         CustomCellModel(
             register: { collection in collection.register(T.self) },
             build: build,
+            identify: identify,
             sizeForItem: sizeForItem,
             shouldSelectItemAt: shouldSelectItemAt,
             didSelectItemAt: didSelectItemAt,
@@ -66,8 +85,7 @@ public class CustomSectionSource: CollectionSource<CustomCellModel>, CollectionV
         viewForSupplementaryElementOfKind: ((UICollectionView, String, IndexPathOffset) -> UICollectionReusableView)? = nil) {
         super.init(
             collectionView: collectionView, data: cells,
-            build: { collection, indexPath, model in
-                return model.build(collection, indexPath) },
+            build: { collection, indexPath, model in model.build(collection, indexPath) },
             onUpdate: onUpdate,
             viewForSupplementaryElementOfKind: viewForSupplementaryElementOfKind)
         cells.forEach { $0.register(collectionView) }

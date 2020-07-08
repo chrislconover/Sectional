@@ -103,6 +103,25 @@ public class CustomSectionSource: CollectionSource<CustomCellModel>, CollectionV
         
         return size
     }
+    
+    // MARK: selection
+    public func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        return data[indexPath.item].shouldSelectItemAt?(
+            collectionView, pathOffset(absolute: indexPath)) ?? true
+    }
+
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        data[indexPath.item].didSelectItemAt?(collectionView, pathOffset(absolute: indexPath))
+    }
+
+    public func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
+        data[indexPath.item].shouldDeselectItemAt?(
+            collectionView, pathOffset(absolute: indexPath)) ?? true
+    }
+
+    public func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        data[indexPath.item].didDeselectItemAt?(collectionView, pathOffset(absolute: indexPath))
+    }
 }
 
 extension UICollectionView {

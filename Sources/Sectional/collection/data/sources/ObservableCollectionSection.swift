@@ -52,20 +52,10 @@ extension UICollectionView {
                            configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
                            withDelegate: ((ObservableCollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
         -> ObservableCollectionSource<T> {
-
-            let dataSource = ObservableCollectionSource<T>(
-                collectionView: self, defer: source, build: build,
-                onUpdate: onUpdate, onError: onError)
-            configure?(dataSource, self)
-
-            if let withDelegate = withDelegate {
-                let delegate = CollectionViewSectionDelegate()
-                withDelegate(dataSource, delegate)
-                dataSource.delegate = delegate
-            }
-
-            dataSource.commit()
-            return dataSource
+            let source = section(defer: source, build: build, onUpdate: onUpdate,
+                    onError: onError, configure: configure, withDelegate: withDelegate)
+            source.commit()
+            return source
     }
 
 
@@ -86,6 +76,11 @@ extension UICollectionView {
                 let delegate = CollectionViewSectionDelegate()
                 withDelegate(dataSource, delegate)
                 dataSource.delegate = delegate
+            }
+            
+            self.dataSource = dataSource
+            if let delegate = dataSource.delegate {
+                self.delegate = delegate
             }
 
             return dataSource

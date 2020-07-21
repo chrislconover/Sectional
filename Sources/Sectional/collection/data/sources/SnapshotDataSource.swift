@@ -139,29 +139,13 @@ extension UICollectionView {
                 withDelegate(dataSource, delegate)
                 dataSource.delegate = delegate
             }
+            
+            self.dataSource = dataSource
+            if let delegate = dataSource.delegate {
+                self.delegate = delegate
+            }
+            
             return dataSource
     }
-
-//    public func section<T>(
-//        with data: [T],
-//        build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
-//        onUpdate: CollectionAnimationStrategy<T> = .animate,
-//        configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
-//        withDelegate: ((CollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
-//        -> CollectionSource<T> where T: Equatable {
-//
-//            let dataSource = CollectionSource<T>(
-//                collectionView: self, data: data,
-//                build: build,
-//                onUpdate: onUpdate)
-//            configure?(dataSource, self)
-//
-//            if let withDelegate = withDelegate {
-//                let delegate = CollectionViewSectionDelegate()
-//                withDelegate(dataSource, delegate)
-//                dataSource.delegate = delegate
-//            }
-//            return dataSource
-//    }
 }
 

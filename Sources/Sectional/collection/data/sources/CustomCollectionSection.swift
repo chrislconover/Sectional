@@ -165,6 +165,9 @@ extension UICollectionView {
             withDelegate(section, delegate)
             section.delegate = delegate
         }
+        
+        dataSource = section
+        delegate = section.delegate
 
         return section
     }
@@ -175,10 +178,10 @@ extension UICollectionView {
         onUpdate: CollectionAnimationStrategy<CustomCellModel>,
         viewForSupplementaryElementOfKind: ((UICollectionView, String, IndexPathOffset) -> UICollectionReusableView)? = nil,
         withDelegate: ((CustomSectionSource, CollectionViewSectionDelegate) -> Void)? = nil) -> CustomSectionSource {
-        return self.section(with: cells,
-                            configure: configure,
-                            onUpdate: onUpdate,
-                            viewForSupplementaryElementOfKind: viewForSupplementaryElementOfKind,
-                            withDelegate: withDelegate)
+        section(with: cells,
+                configure: configure,
+                onUpdate: onUpdate,
+                viewForSupplementaryElementOfKind: viewForSupplementaryElementOfKind,
+                withDelegate: withDelegate)
     }
 }

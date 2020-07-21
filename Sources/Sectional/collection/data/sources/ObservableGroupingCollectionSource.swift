@@ -122,6 +122,11 @@ extension UICollectionView {
                 withDelegate(dataSource, lazyDelegate())
             }
             dataSource.delegate = existingDelegate
+            
+            self.dataSource = dataSource
+            if let delegate = dataSource.delegate {
+                self.delegate = delegate
+            }
 
             return dataSource
     }

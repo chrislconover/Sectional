@@ -129,7 +129,7 @@ extension UICollectionView {
         from models: CollectionViewNestedConfiguration...,
         configure: ((CompositeCollectionDataSource, CollectionViewCompositeDelegate) -> Void)? = nil)
         -> CompositeCollectionDataSource {
-            return sections(from: models, configure: configure)
+            sections(from: models, configure: configure)
     }
 
     public func sections(

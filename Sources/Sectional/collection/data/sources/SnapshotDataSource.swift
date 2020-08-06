@@ -29,10 +29,15 @@ public class CollectionSource<T>: CollectionSectionDataSourceBase {
     }
 
     public func at(_ index: Int) -> T { return data[index] }
-    public var data: [T] { didSet {
+    
+    public private(set) var data: [T]
+    public func update(data newValue: [T]) {
         onUpdate.update(collectionView,
                         offset: self.dataSource,
-                        from: oldValue, to: data) }}
+                        from: data, to: newValue,
+                        updateState: { self.data = $0 })
+    }
+    
     var collectionView: UICollectionView
     fileprivate var onUpdate: CollectionAnimationStrategy<T>
 }
@@ -43,6 +48,7 @@ public class CollectionAnimationStrategy<T> {
                 offset: CollectionOffset,
                 from oldValue: [T],
                 to data: [T],
+                updateState: ([T]) -> Void,
                 completion: ((Bool) -> Void)? = nil) {
         fatalError("Abstract base")
     }
@@ -56,7 +62,9 @@ extension CollectionAnimationStrategy {
                              offset: CollectionOffset,
                              from oldValue: [T],
                              to data: [T],
+                             updateState: ([T]) -> Void,
                              completion: ((Bool) -> Void)? = nil) {
+            updateState(data)
             collectionView.reloadData()
         }
     }
@@ -83,6 +91,7 @@ extension CollectionAnimationStrategy {
                              offset: CollectionOffset,
                              from oldValue: [T],
                              to data: [T],
+                             updateState: ([T]) -> Void,
                              completion: ((Bool) -> Void)? = nil) {
             guard let dataSource = collectionView.dataSource else { return }
 
@@ -97,6 +106,7 @@ extension CollectionAnimationStrategy {
                 // and there were no previous entries
                 if oldValue.count == 0 {
                     if updates.total.count > 0 {
+                        updateState(data)
                         collectionView.reloadData()
                     }
                     return
@@ -104,10 +114,13 @@ extension CollectionAnimationStrategy {
             }
 
             guard updates.hasChanges else {
+                updateState(data)
                 collectionView.reloadData()
                 return
             }
+            
             collectionView.performBatchUpdates({
+                updateState(data)
                 collectionView.deleteItems(at: deletions)
                 collectionView.insertItems(at: insertions)
             }, completion: completion)
@@ -119,26 +132,38 @@ extension CollectionAnimationStrategy where T: Equatable {
     public static var animate: CollectionAnimationStrategy { return Animate(==) }
 }
 
+
 extension UICollectionView {
 
-    public func section<T>(with data: [T],
-                           build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
-                           onUpdate: CollectionAnimationStrategy<T>,
-                           configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
-                           withDelegate: ((CollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
+    public func section<T>(
+        with data: [T],
+        build: @escaping (UICollectionView, IndexPath, T) -> UICollectionViewCell,
+        onUpdate: CollectionAnimationStrategy<T>,
+        referenceSizeForHeader: ((UICollectionView, UICollectionViewLayout, Int) -> CGSize)? = nil,
+        viewForSupplementaryElementOfKind: ((UICollectionView, String, IndexPathOffset) -> UICollectionReusableView)? = nil,
+        configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
+        withDelegate: ((CollectionSource<T>, CollectionViewSectionDelegate) -> Void)? = nil)
         -> CollectionSource<T> {
 
             let dataSource = CollectionSource<T>(
-                collectionView: self, data: data,
+                collectionView: self,
+                data: data,
                 build: build,
-                onUpdate: onUpdate)
+                onUpdate: onUpdate,
+                viewForSupplementaryElementOfKind: viewForSupplementaryElementOfKind)
             configure?(dataSource, self)
 
-            if let withDelegate = withDelegate {
-                let delegate = CollectionViewSectionDelegate()
-                withDelegate(dataSource, delegate)
-                dataSource.delegate = delegate
+            var sectionDelegate: CollectionViewSectionDelegate!
+            let delegate: () -> CollectionViewSectionDelegate = {
+                if sectionDelegate == nil { sectionDelegate = CollectionViewSectionDelegate() }
+                return sectionDelegate!
             }
+            
+            if let referenceSizeForHeader = referenceSizeForHeader {
+                delegate().referenceSizeForHeaderInSection = referenceSizeForHeader
+            }
+            withDelegate?(dataSource, delegate())
+            dataSource.delegate = sectionDelegate
             
             self.dataSource = dataSource
             if let delegate = dataSource.delegate {

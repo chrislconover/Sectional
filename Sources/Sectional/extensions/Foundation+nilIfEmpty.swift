@@ -19,3 +19,7 @@ extension Collection {
         return !isEmpty ? self : nil
     }
 }
+
+extension CGSize {
+    var nilIfEmpty: Self? { self == .zero ? nil : self }
+}

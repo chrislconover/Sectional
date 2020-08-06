@@ -107,21 +107,18 @@ extension UICollectionView {
                 return viewForSupplementaryElementOfKind(dataSource, $0, $1, $2)
             }
 
-            var existingDelegate: CollectionViewSectionDelegate?
-            let lazyDelegate: () -> CollectionViewSectionDelegate = {
-                if existingDelegate == nil { existingDelegate = CollectionViewSectionDelegate() }
-                return existingDelegate!
+            var sectionDelegate: CollectionViewSectionDelegate!
+            let delegate: () -> CollectionViewSectionDelegate = {
+                if sectionDelegate == nil { sectionDelegate = CollectionViewSectionDelegate() }
+                return sectionDelegate
             }
 
             if let referenceSizeForHeaderInSection = referenceSizeForHeaderInSection {
-                lazyDelegate().referenceSizeForHeaderInSection = referenceSizeForHeaderInSection
+                delegate().referenceSizeForHeaderInSection = referenceSizeForHeaderInSection
             }
 
-            if let withDelegate = withDelegate {
-                // then initialize delegate override and call handler for configuration
-                withDelegate(dataSource, lazyDelegate())
-            }
-            dataSource.delegate = existingDelegate
+            withDelegate?(dataSource, delegate())
+            dataSource.delegate = sectionDelegate
             
             self.dataSource = dataSource
             if let delegate = dataSource.delegate {

@@ -78,7 +78,7 @@ public class CompositeCollectionDataSource: NSObject, UICollectionViewDataSource
     }
 
     fileprivate init(collectionView: UICollectionView,
-                 models: [CollectionViewNestedConfiguration]) {
+                     models: [CollectionViewNestedConfiguration]) {
         delegate = CollectionViewCompositeDelegate(
             collectionView: collectionView, models: models)
         self.collectionView = collectionView
@@ -90,11 +90,11 @@ public class CompositeCollectionDataSource: NSObject, UICollectionViewDataSource
     func configure() {
         var section = 0
         var currentIndex = 0
-        for source in models.map({ $0.dataSource }) {
+        for source in models.map { $0.dataSource } {
             let rebased = RebasedCollectionDataSource(
                 baseOffset: IndexPath(row: 0, section: section),
                 indexOffset: currentIndex,
-                dataSource: source)
+                source: source)
             let sections = source.numberOfSections?(in: collectionView) ?? 0
             (section ..< section + sections).forEach {
                 self.sections[$0] = rebased
@@ -110,9 +110,19 @@ public class CompositeCollectionDataSource: NSObject, UICollectionViewDataSource
     }
 
     struct RebasedCollectionDataSource {
+        
+        init(baseOffset: IndexPath,
+             indexOffset: Int,
+             source: CollectionViewSectionDataSource) {
+            self.baseOffset = baseOffset
+            self.indexOffset = indexOffset
+            self.dataSource = source
+            self.dataSource.baseOffset = baseOffset
+        }
+        
         var baseOffset: IndexPath
         var indexOffset: Int
-        var dataSource: UICollectionViewDataSource
+        var dataSource: CollectionViewSectionDataSource
     }
 
     unowned var collectionView: UICollectionView
@@ -126,7 +136,7 @@ public class CompositeCollectionDataSource: NSObject, UICollectionViewDataSource
 extension UICollectionView {
 
     public func sections(
-        from models: CollectionViewNestedConfiguration...,
+        _ models: CollectionViewNestedConfiguration...,
         configure: ((CompositeCollectionDataSource, CollectionViewCompositeDelegate) -> Void)? = nil)
         -> CompositeCollectionDataSource {
             sections(from: models, configure: configure)

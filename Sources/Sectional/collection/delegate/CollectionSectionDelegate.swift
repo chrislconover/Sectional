@@ -39,12 +39,21 @@ public class CollectionViewSectionDelegate: NSObject,  CollectionViewNestedDeleg
     public var performAction: ((UICollectionView, Selector, IndexPathOffset, Any?) -> Void)?
 
     // Focus
-    public var canFocusItemAt: ((UICollectionView, IndexPathOffset) -> Bool)?
-
-    public var targetIndexPathForMoveFromItemAt: ((UICollectionView, IndexPathOffset, IndexPathOffset) -> IndexPath)?
-
-    public var shouldSpringLoadItemAt: ((UICollectionView, IndexPathOffset, UISpringLoadedInteractionContext) -> Bool)?
-
+    public var canFocusItemAt: ((UICollectionView, IndexPathOffset) -> Bool)? {
+        didSet { supportedSelectors[.canFocusItemAt] = true }}
+    
+    public var shouldUpdateFocusIn: ((UICollectionView, UICollectionViewFocusUpdateContext) -> Bool)? {
+        didSet { supportedSelectors[.shouldUpdateFocusIn] = true }}
+    
+    public var didUpdateFocusIn: ((UICollectionView, UICollectionViewFocusUpdateContext, UIFocusAnimationCoordinator) -> Void)? {
+        didSet { supportedSelectors[.didUpdateFocusIn] = true }}
+    
+    public var targetIndexPathForMoveFromItemAt: ((UICollectionView, IndexPathOffset, IndexPathOffset) -> IndexPath)? {
+        didSet { supportedSelectors[.targetIndexPathForMoveFromItemAt] = true }}
+    
+    public var shouldSpringLoadItemAt: ((UICollectionView, IndexPathOffset, UISpringLoadedInteractionContext) -> Bool)? {
+        didSet { supportedSelectors[.shouldSpringLoadItemAt] = true }}
+    
     // UICollectionViewDelegateFlowLayout
     public var sizeForItemWithLayoutAt: ((UICollectionView, UICollectionViewLayout, IndexPathOffset) -> CGSize)? {
         didSet { supportedSelectors[.sizeForItemAt] = true }}
@@ -108,16 +117,33 @@ extension CollectionViewSectionDelegate {
     // These methods provide support for copy/paste actions on cells.
     // All three should be implemented if any are.
     public func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-        return shouldShowMenuForItemAt?(collectionView, pathOffset(absolute: indexPath)) ?? false }
+        return shouldShowMenuForItemAt?(collectionView, pathOffset(absolute: indexPath)) ?? false
+    }
+    
     public func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-        return canPerformAction?(collectionView, action, pathOffset(absolute: indexPath), sender) ?? false }
+        return canPerformAction?(collectionView, action, pathOffset(absolute: indexPath), sender) ?? false
+    }
+    
     public func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-        performAction?(collectionView, action, pathOffset(absolute: indexPath), sender) }
+        performAction?(collectionView, action, pathOffset(absolute: indexPath), sender)
+    }
 
     // Focus
     public func collectionView(_ collectionView: UICollectionView, canFocusItemAt indexPath: IndexPath) -> Bool {
-        return canFocusItemAt?(collectionView, pathOffset(absolute: indexPath)) ?? true }
+        canFocusItemAt?(collectionView, pathOffset(absolute: indexPath)) ?? true
+    }
 
+    public func collectionView(_ collectionView: UICollectionView,
+                               shouldUpdateFocusIn context: UICollectionViewFocusUpdateContext) -> Bool {
+        shouldUpdateFocusIn!(collectionView, context)
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView,
+                               didUpdateFocusIn context: UICollectionViewFocusUpdateContext,
+                               with coordinator: UIFocusAnimationCoordinator) {
+        didUpdateFocusIn!(collectionView, context, coordinator)
+    }
+        
     public func collectionView(_ collectionView: UICollectionView,
                         targetIndexPathForMoveFromItemAt originalIndexPath: IndexPath,
                         toProposedIndexPath proposedIndexPath: IndexPath) -> IndexPath {
@@ -139,10 +165,40 @@ extension CollectionViewSectionDelegate: UICollectionViewDelegateFlowLayout {
     override public func responds(to aSelector: Selector!) -> Bool {
         return supportedSelectors[aSelector] ?? super.responds(to: aSelector)
     }
-
-    public func collectionView(_ collectionView: UICollectionView,
+    
+    @objc public func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return sizeForItemWithLayoutAt!(collectionView, collectionViewLayout, pathOffset(absolute: indexPath))
+        sizeForItemWithLayoutAt!(collectionView, collectionViewLayout, pathOffset(absolute: indexPath))
+    }
+    
+    @objc func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
+        insetForSectionAt!(collectionView, collectionViewLayout, section)
+    }
+
+    @objc func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        minimumLineSpacingForSectionAt!(collectionView, collectionViewLayout, section)
+    }
+
+    @objc func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        minimumInteritemSpacingForSectionAt!(collectionView, collectionViewLayout, section)
+    }
+
+    @objc func collectionView(_ collectionView: UICollectionView,
+                              layout collectionViewLayout: UICollectionViewLayout,
+                              referenceSizeForHeaderInSection section: Int) -> CGSize {
+        referenceSizeForHeaderInSection!(collectionView, collectionViewLayout, section)
+    }
+
+    @objc func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        referenceSizeForFooterInSection section: Int) -> CGSize {
+        referenceSizeForFooterInSection!(collectionView, collectionViewLayout, section)
     }
 }

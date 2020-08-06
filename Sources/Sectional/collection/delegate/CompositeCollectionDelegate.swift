@@ -38,21 +38,33 @@ public class CollectionViewCompositeDelegate: NSObject, CollectionOffset, UIColl
     public var transitionLayoutForOldLayout: ((UICollectionView, UICollectionViewLayout, UICollectionViewLayout) -> UICollectionViewTransitionLayout)?
 
     // Focus
-    public var canFocusItemAt: ((UICollectionView, IndexPathOffset) -> Bool)?
-    public var shouldUpdateFocusIn: ((UICollectionView, UICollectionViewFocusUpdateContext) -> Bool)?
-    public var didUpdateFocusIn: ((UICollectionView, UICollectionViewFocusUpdateContext, UIFocusAnimationCoordinator) -> Void)?
-    public var indexPathForPreferredFocusedView: ((UICollectionView) -> IndexPath?)?
+    public var canFocusItemAt: ((UICollectionView, IndexPathOffset) -> Bool)? {
+        didSet { supportedSelectors[Selector.canFocusItemAt] = true }}
 
-    public var targetIndexPathForMoveFromItemAt: ((UICollectionView, IndexPath, IndexPath) -> IndexPath)?
+    public var shouldUpdateFocusIn: ((UICollectionView, UICollectionViewFocusUpdateContext) -> Bool)? {
+         didSet { supportedSelectors[Selector.shouldUpdateFocusIn] = true }}
+    
+    public var didUpdateFocusIn: ((UICollectionView, UICollectionViewFocusUpdateContext, UIFocusAnimationCoordinator) -> Void)? {
+        didSet { supportedSelectors[Selector.didUpdateFocusIn] = true }}
+    
+    public var indexPathForPreferredFocusedView: ((UICollectionView) -> IndexPath?)? {
+        didSet { supportedSelectors[Selector.indexPathForPreferredFocusedView] = true }}
+
+    /// MARK: Target content offset
+    
+    public var targetIndexPathForMoveFromItemAt: ((UICollectionView, IndexPath, IndexPath) -> IndexPath)?  {
+           didSet { supportedSelectors[Selector.targetIndexPathForMoveFromItemAt] = true }}
+    
     public var targetContentOffsetForProposedContentOffset: ((UICollectionView, CGPoint) -> CGPoint)?
 
-    public var shouldSpringLoadItemAt: ((UICollectionView, IndexPathOffset, UISpringLoadedInteractionContext) -> Bool)?
-
+    /// MARK:  Spring loading
+    
+    public var shouldSpringLoadItemAt: ((UICollectionView, IndexPathOffset, UISpringLoadedInteractionContext) -> Bool)? {
+        didSet { supportedSelectors[Selector.shouldSpringLoadItemAt] = true }}
 
     // UICollectionViewDelegateFlowLayout
     public var sizeForItemWithLayoutAt: ((UICollectionView, UICollectionViewLayout, IndexPath) -> CGSize)? {
-        didSet { supportedSelectors[Selector.sizeForItemAt] = true }
-    }
+        didSet { supportedSelectors[Selector.sizeForItemAt] = true }}
 
     public var insetForSectionAt: ((UICollectionView, UICollectionViewLayout, Int) -> UIEdgeInsets)? {
         didSet { supportedSelectors[.insetForSectionAt] = true }
@@ -288,6 +300,22 @@ public class CollectionViewCompositeDelegate: NSObject, CollectionOffset, UIColl
     private unowned var collectionView: UICollectionView
 }
 
+/// MARK: UICollectionViewDelegate
+extension Selector {
+    
+    static let shouldSelectItemAt =
+        #selector(UICollectionViewDelegate.collectionView(_:shouldSelectItemAt:))
+    
+    static let didSelectItemAt =
+        #selector(UICollectionViewDelegate.collectionView(_:didSelectItemAt:))
+    
+    static let shouldDeselectItemAt =
+        #selector(UICollectionViewDelegate.collectionView(_:shouldDeselectItemAt:))
+    
+    static let didDeselectItemAt =
+        #selector(UICollectionViewDelegate.collectionView(_:didDeselectItemAt:))
+}
+
 extension Selector {
 
     static let indexTitles =
@@ -295,7 +323,25 @@ extension Selector {
 
     static let indexPathForIndexTitleAt =
         #selector(UICollectionViewDataSource.collectionView(_:indexPathForIndexTitle:at:))
+    
+    static let canFocusItemAt =
+        #selector(UICollectionViewDelegateFlowLayout.collectionView(_:canFocusItemAt:))
 
+    static let shouldUpdateFocusIn =
+        #selector(UICollectionViewDelegateFlowLayout.collectionView(_:shouldUpdateFocusIn:))
+    
+    static let didUpdateFocusIn =
+        #selector(UICollectionViewDelegateFlowLayout.collectionView(_:didUpdateFocusIn:with:))
+    
+    static let indexPathForPreferredFocusedView =
+        #selector(UICollectionViewDelegateFlowLayout.indexPathForPreferredFocusedView(in:))
+
+    static let targetIndexPathForMoveFromItemAt =
+        #selector(UICollectionViewDelegateFlowLayout.collectionView(_:targetIndexPathForMoveFromItemAt:toProposedIndexPath:))
+
+    static let shouldSpringLoadItemAt =
+        #selector(UICollectionViewDelegateFlowLayout.collectionView(_:shouldSpringLoadItemAt:with:))
+    
     static let sizeForItemAt =
         #selector(UICollectionViewDelegateFlowLayout.collectionView(_:layout:sizeForItemAt:))
 
@@ -374,11 +420,9 @@ extension CollectionViewCompositeDelegate: UICollectionViewDelegateFlowLayout {
 
 
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        let error: () -> CGSize = { fatalError("If any section implements \(Selector.referenceSizeForHeaderInSection), it must be handled for all cases") }
-        return behavior(section)?
-            .collectionView?(collectionView, layout: collectionViewLayout, referenceSizeForHeaderInSection: section)
+        behavior(section)?.collectionView?(collectionView, layout: collectionViewLayout, referenceSizeForHeaderInSection: section)
             ?? referenceSizeForHeaderInSection?(collectionView, collectionViewLayout, section)
-            ?? error()
+            ?? .zero
     }
 
 

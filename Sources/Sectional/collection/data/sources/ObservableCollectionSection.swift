@@ -25,7 +25,7 @@ public class ObservableCollectionSource<T>: CollectionSource<T> {
     public func bind(_ source: Observable<[T]>) {
         disposeBag = DisposeBag()
         source.subscribe(
-            onNext: { [unowned self] data in self.data = data },
+            onNext: { [unowned self] data in self.update(data: data) },
             onError: { [unowned self] error in self.onError?(error) },
             onCompleted: {},
             onDisposed: {})

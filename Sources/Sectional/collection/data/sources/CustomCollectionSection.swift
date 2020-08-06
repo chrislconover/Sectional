@@ -14,6 +14,10 @@ public protocol IdentifiableType: Equatable {
     var id: Self.ID { get }
 }
 
+public protocol PrototypeSupport {
+    static var prototype: Self { get }
+}
+
 extension CustomCellModel: IdentifiableType {
     public var id: String { identify() }
 }
@@ -76,7 +80,7 @@ public extension UICollectionViewCell {
 }
 
 
-public class CustomSectionSource: CollectionSource<CustomCellModel>, CollectionViewNestedDelegateType {
+public class CustomSectionSource: CollectionSource<CustomCellModel> {
 
     fileprivate init(
         collectionView: UICollectionView,
@@ -89,57 +93,56 @@ public class CustomSectionSource: CollectionSource<CustomCellModel>, CollectionV
             onUpdate: onUpdate,
             viewForSupplementaryElementOfKind: viewForSupplementaryElementOfKind)
         cells.forEach { $0.register(collectionView) }
-        self.delegate = self
+        self.delegate = customDelegate
     }
     
     override public var data: [CustomCellModel] {
         get { super.data }
         set {
             newValue.forEach { $0.register(collectionView) }
-            super.data = newValue
+            super.update(data: data)
         }
     }
     
     override public func responds(to aSelector: Selector!) -> Bool {
-        if aSelector == Selector.sizeForItemAt {
+        switch aSelector {
+        case Selector.sizeForItemAt:
             return data.contains() { $0.sizeForItem != nil }
+        case Selector.shouldSelectItemAt:
+            return data.contains() { $0.shouldSelectItemAt != nil }
+        case Selector.didSelectItemAt:
+            return data.contains() { $0.didSelectItemAt != nil }
+        case Selector.shouldDeselectItemAt:
+            return data.contains() { $0.shouldDeselectItemAt != nil }
+        case Selector.didDeselectItemAt:
+            return data.contains() { $0.shouldDeselectItemAt != nil }
+        default:
+            return super.responds(to: aSelector)
         }
-        
-        return super.responds(to: aSelector)
     }
 
-    public func collectionView(_ collectionView: UICollectionView,
-                               layout collectionViewLayout: UICollectionViewLayout,
-                               sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
-        guard let size = data[indexPath.item].sizeForItem?(collectionView, pathOffset(absolute: indexPath)) else {
-            assert(false, "If size is specified for any cell, then it should be specified for all cells")
-            return ((collectionViewLayout as? UICollectionViewFlowLayout)?.estimatedItemSize)
-                ?? ((collectionViewLayout as? UICollectionViewFlowLayout)?.itemSize)
-                ?? .init(width: 39, height: 39) // to make it easier to search
-        }
-        
-        return size
-    }
     
-    // MARK: selection
-    public func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return data[indexPath.item].shouldSelectItemAt?(
-            collectionView, pathOffset(absolute: indexPath)) ?? true
-    }
+    public lazy var customDelegate: CollectionViewSectionDelegate = {
+        let delegate = CollectionViewSectionDelegate()
+        delegate.sizeForItemWithLayoutAt = { [unowned self] collection, layout, path in
+            guard let size = self.data[path.inSection.item].sizeForItem?(collection, path) else {
+                fatalError("If size is specified for any cell, then it should be specified for all cells") }
+            return size
+        }
+        
+        delegate.shouldSelectItemAt = { [unowned self] collection, path in
+            self.data[path.inSection.item].shouldSelectItemAt?(collection, path) ?? true }
+        
+        delegate.didSelectItemAt = { [unowned self] collection, path in
+            self.data[path.inSection.item].didSelectItemAt?(collection, path) }
+        
+        delegate.shouldDeselectItemAt = { [unowned self] collection, path in
+            self.data[path.inSection.item].shouldDeselectItemAt?(collection, path) ?? true }
 
-    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        data[indexPath.item].didSelectItemAt?(collectionView, pathOffset(absolute: indexPath))
-    }
+        delegate.didDeselectItemAt = { [unowned self] collection, path in
+            self.data[path.inSection.item].didDeselectItemAt?(collection, path) }
 
-    public func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
-        data[indexPath.item].shouldDeselectItemAt?(
-            collectionView, pathOffset(absolute: indexPath)) ?? true
-    }
-
-    public func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        data[indexPath.item].didDeselectItemAt?(collectionView, pathOffset(absolute: indexPath))
-    }
+        return delegate }()
 }
 
 extension UICollectionView {
@@ -150,25 +153,26 @@ extension UICollectionView {
         onUpdate: CollectionAnimationStrategy<CustomCellModel>,
         viewForSupplementaryElementOfKind: ((UICollectionView, String, IndexPathOffset) -> UICollectionReusableView)? = nil,
         withDelegate: ((CustomSectionSource, CollectionViewSectionDelegate) -> Void)? = nil) -> CustomSectionSource {
-
-        let section = CustomSectionSource(collectionView: self,
-                                          cells: cells,
-                                          onUpdate: onUpdate,
-                                          viewForSupplementaryElementOfKind: viewForSupplementaryElementOfKind)
+        
+        let section = CustomSectionSource(
+            collectionView: self,
+            cells: cells,
+            onUpdate: onUpdate,
+            viewForSupplementaryElementOfKind: viewForSupplementaryElementOfKind)
         configure?(section, self)
-
+        
         // if the caller wants to override the delegate
         if let withDelegate = withDelegate {
-
+            
             // then initialize delegate override and call handler for configuration
-            let delegate = CollectionViewSectionDelegate()
+            let delegate = CollectionSectionDefaultDelegate(withOverridingDelegate: section.delegate!)
             withDelegate(section, delegate)
             section.delegate = delegate
         }
         
         dataSource = section
         delegate = section.delegate
-
+        
         return section
     }
 

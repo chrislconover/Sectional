@@ -3,7 +3,7 @@
 //  Sectional
 //
 //  Created by Chris Conover on 12/1/17.
-//  Copyright © 2017 Methodist Le Bonheur Healthcare. All rights reserved.
+//  Copyright © 2017 Chris Conover. All rights reserved.
 //
 
 import UIKit
@@ -52,7 +52,7 @@ public extension UICollectionView {
     }
 
     func cell<T:UICollectionViewCell>(_ type: T.Type = T.self, at path: IndexPathOffset) -> T? {
-        return cell(type, at: path.absolute)
+        cell(type, at: path.absolute)
     }
 
     func dequeue<T:UICollectionViewCell>(_ type: T.Type = T.self, for path: IndexPath) -> T {
@@ -60,8 +60,8 @@ public extension UICollectionView {
     }
 
     func dequeue<T:UICollectionReusableView>(_ type: T.Type = T.self, ofKind kind: String,
-                                                for path: IndexPath) -> T {
-        return dequeueReusableSupplementaryView(
+                                             for path: IndexPath) -> T {
+        dequeueReusableSupplementaryView(
             ofKind: kind, withReuseIdentifier: T.name, for: path) as! T
     }
 }

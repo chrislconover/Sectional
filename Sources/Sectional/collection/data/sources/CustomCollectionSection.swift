@@ -14,10 +14,6 @@ public protocol IdentifiableType: Equatable {
     var id: Self.ID { get }
 }
 
-public protocol PrototypeSupport {
-    static var prototype: Self { get }
-}
-
 extension CustomCellModel: IdentifiableType {
     public var id: String { identify() }
 }
@@ -100,7 +96,7 @@ public class CustomSectionSource: CollectionSource<CustomCellModel> {
         get { super.data }
         set {
             newValue.forEach { $0.register(collectionView) }
-            super.update(data: data)
+            super.update(data: newValue)
         }
     }
     

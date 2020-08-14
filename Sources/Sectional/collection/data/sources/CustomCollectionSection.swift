@@ -52,7 +52,7 @@ public class CustomCellModel {
 }
 
 
-public extension UICollectionViewCell {
+extension CustomCellModel {
     public static func custom<T: UICollectionViewCell>(
         type: T.Type,
         build: @escaping (UICollectionView, IndexPath) -> T,

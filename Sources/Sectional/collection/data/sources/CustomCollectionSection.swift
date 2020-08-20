@@ -7,14 +7,14 @@
 
 import UIKit
 
-public protocol IdentifiableType: Equatable {
+public protocol IdentifiableType {
     associatedtype ID : Hashable
 
     /// The stable identity of the entity associated with `self`.
     var id: Self.ID { get }
 }
 
-extension CustomCellModel: IdentifiableType {
+extension CustomCellModel: IdentifiableType, Equatable {
     public var id: String { identify() }
 }
 

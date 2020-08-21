@@ -79,7 +79,7 @@ extension CollectionAnimationStrategy {
         -> CollectionAnimationStrategy {
             return Animate(isEqual)
     }
-
+    
     public class Animate: CollectionAnimationStrategy {
 
         var isEqual: (T, T) -> Bool
@@ -128,8 +128,9 @@ extension CollectionAnimationStrategy {
     }
 }
 
-extension CollectionAnimationStrategy where T: Equatable {
-    public static var animate: CollectionAnimationStrategy { return Animate(==) }
+extension CollectionAnimationStrategy where T: IdentifiableType {
+    public static var animate: CollectionAnimationStrategy {
+        Animate { lhs, rhs in lhs.id == rhs.id} }
 }
 
 
@@ -171,6 +172,49 @@ extension UICollectionView {
             }
             
             return dataSource
+    }
+
+    /// Creates an implementation of a single section data source.
+    ///
+    /// Override for configuring custom cell type.  Provides default implementation for creation, defers to closure parameter for configuration.
+    /// This method automatically registers the specified cell type with the collection view.
+    ///
+    /// ```
+    /// collection.column(with: models, cellType: ModelViewCell<MyView>, onUpdate: .animate { $0.id == $1.id })
+    /// ```
+    ///
+    /// - Parameter data: A variadic list of data elements conforming to `ViewModelType`
+    /// - Parameter cellType: Class type for cell to use, overrides provide default values of ModelViewCell<V>
+    /// - Parameter configureCell: Closure that takes parameters of `UICollectionView`, `IndexPath`, `M` (model type), and `C` (cell type),  returns a properly configured cell
+    /// - Parameter onUpdate: Animation strategy to use for insertions or deletions.  Options are .none, .animated, and .animate(...)
+    /// - Parameter referenceSizeForHeader: Optional closure that takes parameters of `UICollectionView`, and `UICollectionViewLayout`, and return section header size, if desired
+    /// - Parameter viewForSupplementaryElementOfKind: Optional closure that takes parameters of `UICollectionView`,  `kind: String`,and `IndexPathOffset` and returns properly configured supplementary view. Used for section header support.
+    /// - Parameter configure: Optional closure for use in additional confguration, normally used for registering cells, but that is done automatically
+    /// - Parameter withDelegate: Optional closure for configuring a delegate (additional behaviors) for the section
+    /// - Returns: An implementation of a single section data source, that can be combined with additional data sources for a multi-section data source via the `sections(...)` methods
+    public func section<M, C: UICollectionViewCell>(
+        with data: [M],
+        cellType: C.Type = C.self,
+        configureCell: @escaping (UICollectionView, IndexPath, M, C) -> Void,
+        onUpdate: CollectionAnimationStrategy<M>,
+        referenceSizeForHeader: ((UICollectionView, UICollectionViewLayout, Int) -> CGSize)? = nil,
+        viewForSupplementaryElementOfKind: ((UICollectionView, String, IndexPathOffset) -> UICollectionReusableView)? = nil,
+        configure: ((CollectionSectionDataSourceBase, UICollectionView) -> ())? = nil,
+        withDelegate: ((CollectionSource<M>, CollectionViewSectionDelegate) -> Void)? = nil)
+        -> CollectionSource<M> {
+
+            register(C.self)
+            return section(
+                with: data,
+                build: { collection, path, model in
+                    let cell = collection.dequeue(cellType, for: path)
+                    configureCell(collection, path, model, cell)
+                    return cell },
+                onUpdate: onUpdate,
+                referenceSizeForHeader: referenceSizeForHeader,
+                viewForSupplementaryElementOfKind: viewForSupplementaryElementOfKind,
+                configure: configure,
+                withDelegate: withDelegate)
     }
 }
 

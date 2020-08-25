@@ -30,15 +30,11 @@ public extension UICollectionView {
     }
 
     func registerHeader<T:UICollectionReusableView>(_ t: T.Type) {
-        self.register(
-            t.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: t.name)
+        self.register(t.self, kind: UICollectionView.elementKindSectionHeader)
     }
 
     func registerFooter<T:UICollectionReusableView>(_ t: T.Type) {
-        self.register(
-            t.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
-            withReuseIdentifier: t.name)
+        self.register(t.self, kind: UICollectionView.elementKindSectionFooter)
     }
 
     func register<T:UICollectionReusableView>(_ t: T.Type, kind: String) {

@@ -218,3 +218,19 @@ extension UICollectionView {
     }
 }
 
+
+public class SupplementalSource {
+
+    public init(register: @escaping (UICollectionView, String) -> Void,
+                size: @escaping ((UICollectionView, UICollectionViewLayout, Int) -> CGSize),
+                view: @escaping ((UICollectionView, String, IndexPathOffset) -> UICollectionReusableView)) {
+        self.register = register
+        self.size = size
+        self.view = view
+    }
+    
+    public var register: (UICollectionView, String) -> Void
+    public var size: (UICollectionView, UICollectionViewLayout, Int) -> CGSize
+    public var view: (UICollectionView, String, IndexPathOffset) -> UICollectionReusableView
+}
+

@@ -427,10 +427,9 @@ extension CollectionViewCompositeDelegate: UICollectionViewDelegateFlowLayout {
 
 
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        let error: () -> CGSize = { fatalError("If any section implements \(Selector.referenceSizeForFooterInSection), it must be handled for all cases") }
         return behavior(section)?
             .collectionView?(collectionView, layout: collectionViewLayout, referenceSizeForFooterInSection: section)
             ?? referenceSizeForFooterInSection?(collectionView, collectionViewLayout, section)
-            ?? error()
+            ?? .zero
     }
 }

@@ -193,12 +193,12 @@ extension CollectionViewSectionDelegate: UICollectionViewDelegateFlowLayout {
     @objc func collectionView(_ collectionView: UICollectionView,
                               layout collectionViewLayout: UICollectionViewLayout,
                               referenceSizeForHeaderInSection section: Int) -> CGSize {
-        referenceSizeForHeaderInSection!(collectionView, collectionViewLayout, section)
+        referenceSizeForHeaderInSection?(collectionView, collectionViewLayout, section) ?? .zero
     }
 
     @objc func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         referenceSizeForFooterInSection section: Int) -> CGSize {
-        referenceSizeForFooterInSection!(collectionView, collectionViewLayout, section)
+        referenceSizeForFooterInSection?(collectionView, collectionViewLayout, section) ?? .zero
     }
 }

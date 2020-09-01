@@ -195,7 +195,7 @@ extension UICollectionView {
     public func section<M, C: UICollectionViewCell>(
         with data: [M],
         cellType: C.Type = C.self,
-        configureCell: @escaping (UICollectionView, IndexPath, M, C) -> Void,
+        configureCell: ((UICollectionView, IndexPath, M, C) -> Void)? = nil,
         onUpdate: CollectionAnimationStrategy<M>,
         referenceSizeForHeader: ((UICollectionView, UICollectionViewLayout, Int) -> CGSize)? = nil,
         viewForSupplementaryElementOfKind: ((UICollectionView, String, IndexPathOffset) -> UICollectionReusableView)? = nil,
@@ -208,7 +208,7 @@ extension UICollectionView {
                 with: data,
                 build: { collection, path, model in
                     let cell = collection.dequeue(cellType, for: path)
-                    configureCell(collection, path, model, cell)
+                    configureCell?(collection, path, model, cell)
                     return cell },
                 onUpdate: onUpdate,
                 referenceSizeForHeader: referenceSizeForHeader,

@@ -19,11 +19,11 @@ public class CompositeCollectionDataSource: NSObject, UICollectionViewDataSource
 
     // MARK: Item and section metrics
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return sections.count
+        return rebasedSections.count
     }
 
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let source = sections[section]!
+        let source = rebasedSections[section]!
         let rebased = section - source.baseOffset.section
         return source.dataSource.collectionView(collectionView, numberOfItemsInSection: rebased)
     }
@@ -52,7 +52,7 @@ public class CompositeCollectionDataSource: NSObject, UICollectionViewDataSource
     }
 
     public func indexTitles(for collectionView: UICollectionView) -> [String]? {
-        let indexTitles = models.map { $0.dataSource }
+        let indexTitles = sections.map { $0.dataSource }
             .flatMap { $0.indexTitles?(for: collectionView) ?? [] }
         return indexTitles.nilIfEmpty
     }
@@ -73,7 +73,7 @@ public class CompositeCollectionDataSource: NSObject, UICollectionViewDataSource
     }
 
     func sourceAndPath(absolute: IndexPath) -> (RebasedCollectionDataSource, IndexPath) {
-        let source = sections[absolute.section]!
+        let source = rebasedSections[absolute.section]!
         return (source, absolute.relativeTo(source.baseOffset))
     }
 
@@ -82,7 +82,7 @@ public class CompositeCollectionDataSource: NSObject, UICollectionViewDataSource
         delegate = CollectionViewCompositeDelegate(
             collectionView: collectionView, models: models)
         self.collectionView = collectionView
-        self.models = models
+        self.sections = models
         super.init()
         configure()
     }
@@ -90,14 +90,14 @@ public class CompositeCollectionDataSource: NSObject, UICollectionViewDataSource
     func configure() {
         var section = 0
         var currentIndex = 0
-        for source in models.map { $0.dataSource } {
+        for source in sections.map { $0.dataSource } {
             let rebased = RebasedCollectionDataSource(
                 baseOffset: IndexPath(row: 0, section: section),
                 indexOffset: currentIndex,
                 source: source)
             let sections = source.numberOfSections?(in: collectionView) ?? 0
             (section ..< section + sections).forEach {
-                self.sections[$0] = rebased
+                self.rebasedSections[$0] = rebased
             }
             section += sections
 
@@ -125,9 +125,9 @@ public class CompositeCollectionDataSource: NSObject, UICollectionViewDataSource
         var dataSource: CollectionViewSectionDataSource
     }
 
+    public var sections: [CollectionViewNestedConfiguration] { didSet { configure() }}
     unowned var collectionView: UICollectionView
-    private var models: [CollectionViewNestedConfiguration]
-    private var sections = [Int: RebasedCollectionDataSource]()
+    private var rebasedSections = [Int: RebasedCollectionDataSource]()
     private var indexToSource = [Int: RebasedCollectionDataSource]()
 
     fileprivate var delegate: CollectionViewCompositeDelegate

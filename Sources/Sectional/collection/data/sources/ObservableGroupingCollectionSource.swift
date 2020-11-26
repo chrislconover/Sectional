@@ -101,8 +101,6 @@ extension UICollectionView {
                 onError: onError)
             configure?(dataSource, self)
 
-            // if the caller wants to override the delegate
-
             dataSource.viewForSupplementaryElementOfKind = { [unowned dataSource] in
                 return viewForSupplementaryElementOfKind(dataSource, $0, $1, $2)
             }

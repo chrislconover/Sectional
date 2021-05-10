@@ -51,12 +51,14 @@ public class CompositeCollectionDataSource: NSObject, UICollectionViewDataSource
         return fromSource.dataSource.collectionView!(collectionView, moveItemAt: from, to: to)
     }
 
+    @available(iOS 14.0, *)
     public func indexTitles(for collectionView: UICollectionView) -> [String]? {
         let indexTitles = sections.map { $0.dataSource }
             .flatMap { $0.indexTitles?(for: collectionView) ?? [] }
         return indexTitles.nilIfEmpty
     }
 
+    @available(iOS 14.0, *)
     public func collectionView(_ collectionView: UICollectionView,
                                indexPathForIndexTitle title: String,
                                at index: Int) -> IndexPath {
@@ -101,7 +103,13 @@ public class CompositeCollectionDataSource: NSObject, UICollectionViewDataSource
             }
             section += sections
 
-            let indicesInSection = source.indexTitles?(for: collectionView)?.count ?? 0
+            let indicesInSection: Int
+            if #available(iOS 14.0, *) {
+                indicesInSection = source.indexTitles?(for: collectionView)?.count ?? 0
+            }
+            else {
+                indicesInSection = 0
+            }
             (currentIndex ..< currentIndex + indicesInSection).forEach { index in
                 indexToSource[index] = rebased
             }

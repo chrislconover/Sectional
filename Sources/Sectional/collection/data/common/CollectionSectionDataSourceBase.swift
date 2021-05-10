@@ -30,12 +30,18 @@ public class CollectionSectionDataSourceBase: NSObject, CollectionViewSectionDat
 
 
     override public func responds(to aSelector: Selector!) -> Bool {
-        switch aSelector {
-        case Selector.indexTitles:
-            return indexTitles != nil
-        case Selector.indexPathForIndexTitleAt:
-            return indexPathForTitleAt != nil
-        default:
+        if #available(iOS 14.0, *) {
+            switch aSelector {
+            case Selector.indexTitles:
+                return indexTitles != nil
+            case Selector.indexPathForIndexTitleAt:
+                return indexPathForTitleAt != nil
+            default:
+                return super.responds(to: aSelector)
+            }
+        }
+        
+        else {
             return super.responds(to: aSelector)
         }
     }

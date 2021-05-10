@@ -318,9 +318,11 @@ extension Selector {
 
 extension Selector {
 
+    @available(iOS 14.0, *)
     static let indexTitles =
         #selector(UICollectionViewDataSource.indexTitles(for:))
 
+    @available(iOS 14.0, *)
     static let indexPathForIndexTitleAt =
         #selector(UICollectionViewDataSource.collectionView(_:indexPathForIndexTitle:at:))
     

@@ -324,8 +324,7 @@ public class ModularTableViewModel: NSObject, UITableViewDelegate, UITableViewDa
 
 // MARK: Table
 
-public protocol TableBuilderProtocol: class, UITableViewDataSource, UITableViewDelegate {
-
+public protocol TableBuilderProtocol: UITableViewDataSource, UITableViewDelegate {
     var offset: IndexPath! { get set }
 }
 

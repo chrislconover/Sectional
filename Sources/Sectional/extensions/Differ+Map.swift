@@ -111,8 +111,7 @@ public struct SectionedUpdates<T, K> where K: Hashable, K: Comparable {
      - Parameter to: Next collection representing a change from `fromSorted`
      - Parameter isEqual: closure to define comparison for any non-Equatable types
      */
-    public init<C: Collection>(from: C, to: C, isEqual: (T, T) -> Bool)
-        where C.Element == T, K: Equatable {
+    public init<C: Collection>(from: C, to: C, isEqual: (T, T) -> Bool) where C.Element == T {
 
             #if DEBUG
             fromSections = [Array(from)]
@@ -133,8 +132,7 @@ public struct SectionedUpdates<T, K> where K: Hashable, K: Comparable {
      - Parameter from: Original collection from which to diff
      - Parameter to: Next collection representing a change from `fromSorted`
      */
-    public init<C: Collection>(from: C, to: C)
-        where C.Element == T, T: Equatable, K: Equatable {
+    public init<C: Collection>(from: C, to: C) where C.Element == T, T: Equatable {
             self.init(from: from, to: to, isEqual: { $0 == $1 })
     }
 
@@ -148,8 +146,7 @@ public struct SectionedUpdates<T, K> where K: Hashable, K: Comparable {
      */
     public init<C: Collection>(fromSorted from: C, toSorted to: C,
                                isEqual: (T, T) -> Bool,
-                               groupBy: @escaping (T) -> K)
-        where C.Element == T, K: Equatable {
+                               groupBy: @escaping (T) -> K) where C.Element == T {
 
             // create section groupings
             let fromSectionIndex = Dictionary(grouping: from, by: groupBy)
@@ -185,8 +182,7 @@ public struct SectionedUpdates<T, K> where K: Hashable, K: Comparable {
      - Parameter initial:    initial data set for which there is to be no diff
      */
 
-    public init<C: Collection>(initial to: C, groupBy: @escaping (T) -> K)
-        where C.Element == T, K: Equatable {
+    public init<C: Collection>(initial to: C, groupBy: @escaping (T) -> K) where C.Element == T {
 
             // create section groupings
             #if DEBUG
@@ -212,8 +208,7 @@ public struct SectionedUpdates<T, K> where K: Hashable, K: Comparable {
      */
     public init<C: Collection>(fromUnsorted from: C, toUnsorted to: C,
                                isEqual: (T, T) -> Bool,
-                               groupBy: @escaping (T) -> K)
-        where C.Element == T, K: Equatable {
+                               groupBy: @escaping (T) -> K) where C.Element == T {
 
             // create section groupings
             let fromSectionIndex = Dictionary(grouping: from.enumerated(), by: { groupBy($0.1) })
@@ -248,16 +243,14 @@ public struct SectionedUpdates<T, K> where K: Hashable, K: Comparable {
     }
 
     public init<C: Collection>(fromUnsorted from: C, toUnsorted to: C,
-                               groupBy: @escaping (C.Element) -> K)
-        where C.Element == T, T: Equatable, K: Equatable {
+                               groupBy: @escaping (C.Element) -> K) where C.Element == T, T: Equatable {
             self.init(fromUnsorted: from, toUnsorted: to,
                       isEqual: { $0 == $1 },
                       groupBy: groupBy)
     }
 
     public init<C: Collection>(fromSorted from: C, toSorted to: C,
-                               groupBy: @escaping (C.Element) -> K)
-        where C.Element == T, T: Equatable, K: Equatable {
+                               groupBy: @escaping (C.Element) -> K) where C.Element == T, T: Equatable {
             self.init(fromSorted: from, toSorted: to,
                       isEqual: { $0 == $1 },
                       groupBy: groupBy)

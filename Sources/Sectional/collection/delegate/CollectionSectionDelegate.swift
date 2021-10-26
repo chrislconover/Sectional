@@ -172,31 +172,31 @@ extension CollectionViewSectionDelegate: UICollectionViewDelegateFlowLayout {
         sizeForItemWithLayoutAt!(collectionView, collectionViewLayout, pathOffset(absolute: indexPath))
     }
     
-    @objc func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        insetForSectionAt section: Int) -> UIEdgeInsets {
+    @objc public func collectionView(_ collectionView: UICollectionView,
+                                     layout collectionViewLayout: UICollectionViewLayout,
+                                     insetForSectionAt section: Int) -> UIEdgeInsets {
         insetForSectionAt!(collectionView, collectionViewLayout, section)
     }
 
-    @objc func collectionView(_ collectionView: UICollectionView,
+    @objc public func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         minimumLineSpacingForSectionAt!(collectionView, collectionViewLayout, section)
     }
 
-    @objc func collectionView(_ collectionView: UICollectionView,
+    @objc public func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         minimumInteritemSpacingForSectionAt!(collectionView, collectionViewLayout, section)
     }
 
-    @objc func collectionView(_ collectionView: UICollectionView,
+    @objc public func collectionView(_ collectionView: UICollectionView,
                               layout collectionViewLayout: UICollectionViewLayout,
                               referenceSizeForHeaderInSection section: Int) -> CGSize {
         referenceSizeForHeaderInSection?(collectionView, collectionViewLayout, section) ?? .zero
     }
 
-    @objc func collectionView(_ collectionView: UICollectionView,
+    @objc public func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         referenceSizeForFooterInSection section: Int) -> CGSize {
         referenceSizeForFooterInSection?(collectionView, collectionViewLayout, section) ?? .zero

@@ -92,7 +92,7 @@ public class CompositeCollectionDataSource: NSObject, UICollectionViewDataSource
     func configure() {
         var section = 0
         var currentIndex = 0
-        for source in sections.map { $0.dataSource } {
+        for source in sections.map({ $0.dataSource }) {
             let rebased = RebasedCollectionDataSource(
                 baseOffset: IndexPath(row: 0, section: section),
                 indexOffset: currentIndex,

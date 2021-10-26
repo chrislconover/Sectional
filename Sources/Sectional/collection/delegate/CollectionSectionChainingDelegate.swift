@@ -11,7 +11,7 @@ import UIKit
 public class CollectionSectionDefaultDelegate: CollectionViewSectionDelegate {
     
     override public func responds(to aSelector: Selector!) -> Bool {
-        overridingDelegate.responds(to: aSelector) ?? super.responds(to: aSelector)
+        overridingDelegate.responds(to: aSelector) || super.responds(to: aSelector)
     }
 
     // MARK: highlighting

@@ -1,3 +1,3 @@
 # Sectional
 
-Modular UICollectionView data and delegate sources.
+Composable data sources in UIKit.
